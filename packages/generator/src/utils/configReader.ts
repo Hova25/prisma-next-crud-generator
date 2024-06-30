@@ -18,10 +18,14 @@ export function readYaml<T> (src: string): T | undefined{
 
 const ignoreCrudSchema = z.array(z.union([
   z.literal('create').optional(),
-  z.literal('read').optional(),
+  z.literal('readList').optional(),
+  z.literal('readOne').optional(),
   z.literal('update').optional(),
   z.literal('delete').optional()
 ])).nullable();
+
+type IgnoreCrudType = z.infer<typeof ignoreCrudSchema>;
+export type CrudAction = NonNullable<IgnoreCrudType>[number];
 
 const entitySchema = z.object({
   ignore: z.record(ignoreCrudSchema).optional(),
@@ -31,11 +35,11 @@ const configSchema = z.object({
   entity: entitySchema.optional(),
 }).strict();
 
-type Config = z.infer<typeof configSchema>;
+export type Config = z.infer<typeof configSchema>;
 
 export const getConfig = (options: GeneratorOptions): Config | undefined =>  {
   const {generator: {config: {config: configFile = "./config/next_crud_generator"}}} = options
-  let config = readYaml(path.join(process.cwd(), "prisma", `${configFile.toString()}.yaml`))
+  let config = readYaml<Config>(path.join(process.cwd(), "prisma", `${configFile.toString()}.yaml`))
   if(!config) {
     config = readYaml<Config>(path.join(process.cwd(), "prisma", `${configFile.toString()}.yml`))
   }

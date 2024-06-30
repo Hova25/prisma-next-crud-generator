@@ -42,3 +42,8 @@ model Project {
   name  String
   users User[]
 }
+
+model ExampleTest {
+  id   String @id @default(cuid())
+  name String
+}

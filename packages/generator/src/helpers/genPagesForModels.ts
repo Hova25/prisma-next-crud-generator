@@ -15,9 +15,11 @@ import { button } from '../template/components/ui/button'
 import { breadcrumbs } from '../template/components/ui/breadcrumbs'
 import { select } from '../template/components/ui/select'
 import { actions } from '../template/actions'
-import { pascalToSnakeCase, pluralize } from '../utils/strings'
+import { pascalToCamelCase, pascalToSnakeCase, pluralize } from '../utils/strings'
+import { Config } from '../utils/configReader'
+import { isIgnored } from './configHelper'
 
-export async function genPagesForModels(models: DMMF.Model[], output: string) {
+export async function genPagesForModels(models: DMMF.Model[], output: string, config?: Config) {
   const appPath = path.join(output, 'app')
   const componentsPath = path.join(output, 'components')
   const actionsPath = path.join(output, 'actions')
@@ -39,29 +41,38 @@ export async function genPagesForModels(models: DMMF.Model[], output: string) {
   ])
 
   for (const model of models) {
+    const modelNameCamelCase = pascalToCamelCase(model.name)
     const modelNameSnakeCase = pascalToSnakeCase(model.name)
     const modelNameSnakeCasePlural = pluralize(modelNameSnakeCase)
-
-    const indexFile = list(model)
-    const showFile = show(model.name, model.fields)
-    const createFile = create(model.name, model.fields)
-    const editFile = edit(model.name, model.fields)
-    const actionsFile = actions(model.name, model.fields, models)
-
-    await Promise.all([
-      writeFileSafely(
+    
+    const promises: Promise<void>[] = [];
+    
+    if(!config || !isIgnored({modelNameCamelCase, config, crudAction: "readList"})) {
+      const indexFile = list(model)
+      promises.push(writeFileSafely(
         path.join(appPath, `${modelNameSnakeCasePlural}`, 'page.tsx'),
         indexFile,
-      ),
-      writeFileSafely(
-        path.join(appPath, `${modelNameSnakeCasePlural}`, 'create', 'page.tsx'),
-        createFile,
-      ),
-      writeFileSafely(
+      ))
+    }
+    
+    if(!config || !isIgnored({modelNameCamelCase, config, crudAction: "readOne"})) {
+      const showFile = show(model.name, model.fields)
+      promises.push(writeFileSafely(
         path.join(appPath, `${modelNameSnakeCasePlural}`, '[id]', 'page.tsx'),
         showFile,
-      ),
-      writeFileSafely(
+      ))
+    }
+    
+    if(!config || !isIgnored({modelNameCamelCase, config, crudAction: "create"})) {
+      const createFile = create(model.name, model.fields)
+      promises.push(writeFileSafely(
+        path.join(appPath, `${modelNameSnakeCasePlural}`, 'create', 'page.tsx'),
+        createFile,
+      ))
+    }
+    if(!config || !isIgnored({modelNameCamelCase, config, crudAction: "update"})) {
+      const editFile = edit(model.name, model.fields)
+      promises.push(writeFileSafely(
         path.join(
           appPath,
           `${modelNameSnakeCasePlural}`,
@@ -70,11 +81,17 @@ export async function genPagesForModels(models: DMMF.Model[], output: string) {
           'page.tsx',
         ),
         editFile,
-      ),
-      writeFileSafely(
+      ))
+    }
+    
+    if(!config || !isIgnored({modelNameCamelCase, config, crudAction: "delete"})) {
+      const actionsFile = actions(model.name, model.fields, models)
+      promises.push(writeFileSafely(
         path.join(actionsPath, `${modelNameSnakeCase}.ts`),
         actionsFile,
-      ),
-    ])
+      ))
+    }
+    
+    await Promise.all(promises)
   }
 }

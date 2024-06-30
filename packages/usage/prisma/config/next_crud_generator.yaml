@@ -1,8 +1,7 @@
 entity:
   user:
     ignore:
-  example:
-    ignore:
+      - read
       - delete
       - create
       - update
