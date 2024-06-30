@@ -23,8 +23,12 @@ const ignoreCrudSchema = z.array(z.union([
   z.literal('delete').optional()
 ])).nullable();
 
-const configSchema = z.object({
+const entitySchema = z.object({
   ignore: z.record(ignoreCrudSchema).optional(),
+})
+
+const configSchema = z.object({
+  entity: entitySchema.optional(),
 }).strict();
 
 type Config = z.infer<typeof configSchema>;

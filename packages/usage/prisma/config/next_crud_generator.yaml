@@ -1,6 +1,8 @@
-ignore:
-  users:
+entity:
+  user:
+    ignore:
   example:
-    - delete
-    - create
-    - update
+    ignore:
+      - delete
+      - create
+      - update
