@@ -1,7 +1,16 @@
+global:
+  dashboard:
+    page:
+      url: "/"
+
 entity:
   user:
     ignore:
-      - read
+      - readList
+      - readOne
       - delete
       - create
       - update
+  test:
+    ignore:
+    url: heyyy

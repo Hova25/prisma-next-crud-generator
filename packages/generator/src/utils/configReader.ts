@@ -22,18 +22,44 @@ const ignoreCrudSchema = z.array(z.union([
   z.literal('readOne').optional(),
   z.literal('update').optional(),
   z.literal('delete').optional()
-])).nullable();
+]));
 
 type IgnoreCrudType = z.infer<typeof ignoreCrudSchema>;
 export type CrudAction = NonNullable<IgnoreCrudType>[number];
 
-const entitySchema = z.object({
-  ignore: z.record(ignoreCrudSchema).optional(),
+
+const genericFileSchema = z.object({
+  url: z.string().optional(), // example "/" or "/admin"
+  enable: z.boolean().optional(),
+  templatePath: z.string().optional(),
+}).optional()
+
+const entitySchema = z.intersection(
+  genericFileSchema,
+  z.object({
+    ignore: ignoreCrudSchema,
+  })
+)
+
+const nextAppDirectoryFileSchema = z.object({
+  layout: genericFileSchema.optional(),
+  page: genericFileSchema.optional(),
+  loading: genericFileSchema.optional(),
+  notFound: genericFileSchema.optional(),
+  error: genericFileSchema.optional(),
+  globalError: genericFileSchema.optional(),
+  // route: genericFileSchema.optional(), not root for the moment (because we need to create and spécific feature for this)
+  template: genericFileSchema.optional(),
+}).optional()
+
+const globalSchema = z.object({
+  dashboard: nextAppDirectoryFileSchema.optional(),
 })
 
 const configSchema = z.object({
-  entity: entitySchema.optional(),
-}).strict();
+  global: globalSchema.nullable().optional(),
+  entity: z.record(z.string(), entitySchema),
+}).optional();
 
 export type Config = z.infer<typeof configSchema>;
 
