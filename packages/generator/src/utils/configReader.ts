@@ -5,8 +5,6 @@ import path from 'path'
 import process from 'process'
 import { GeneratorOptions } from '@prisma/generator-helper'
 import { logger } from '@prisma/internals'
-import { GENERATOR_NAME } from '../constants'
-
 
 export function readYaml<T> (src: string): T | undefined{
   try {
@@ -18,8 +16,6 @@ export function readYaml<T> (src: string): T | undefined{
   }
 }
 
-
-// const
 const ignoreCrudSchema = z.array(z.union([
   z.literal('create').optional(),
   z.literal('read').optional(),
