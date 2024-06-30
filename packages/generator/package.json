@@ -23,7 +23,9 @@
     "@prisma/internals": "^5.6.0",
     "@types/pluralize": "^0.0.33",
     "pluralize": "^8.0.0",
-    "prettier": "3.1.1"
+    "prettier": "3.1.1",
+    "yaml": "^2.4.5",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",

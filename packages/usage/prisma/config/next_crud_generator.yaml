@@ -1,0 +1,6 @@
+ignore:
+  users:
+  example:
+    - delete
+    - create
+    - update

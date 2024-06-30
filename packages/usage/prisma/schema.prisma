@@ -5,6 +5,7 @@ generator client {
 generator next_crud_generator {
   provider = "npx prisma-next-crud-generator"
   output   = "../src"
+  config   = "./config/next_crud_generator"
 }
 
 datasource db {
