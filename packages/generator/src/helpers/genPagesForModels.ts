@@ -20,12 +20,12 @@ import { Config } from '../utils/configReader'
 import { isIgnored } from './configHelper'
 
 export async function genPagesForModels(models: DMMF.Model[], output: string, config?: Config) {
-  const appPath = path.join(output, 'app')
+  const appPath =  path.join(output, 'app', config?.global?.dashboard?.path || "")
   const componentsPath = path.join(output, 'components')
   const actionsPath = path.join(output, 'actions')
   const sidebarFile = sidebar(models.map((model) => model.name))
-
-  await Promise.all([
+  
+  const globalFilePromises: Promise<void>[] = [
     writeFileSafely(path.join(output, 'lib', 'prisma.ts'), lib),
     writeFileSafely(path.join(appPath, 'layout.tsx'), layout),
     writeFileSafely(path.join(appPath, 'page.tsx'), dashboard),
@@ -38,7 +38,10 @@ export async function genPagesForModels(models: DMMF.Model[], output: string, co
       breadcrumbs,
     ),
     writeFileSafely(path.join(componentsPath, 'ui', 'Select.tsx'), select),
-  ])
+  ];
+  
+  
+  await Promise.all(globalFilePromises)
 
   for (const model of models) {
     const modelNameCamelCase = pascalToCamelCase(model.name)

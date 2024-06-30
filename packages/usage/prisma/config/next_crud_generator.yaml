@@ -1,7 +1,8 @@
-global:
-  dashboard:
-    page:
-      url: "/"
+#global:
+#  dashboard:
+#    path: "admin"
+#    page:
+#    layout:
 
 entity:
   user:
@@ -12,5 +13,4 @@ entity:
       - create
       - update
   test:
-    ignore:
-    url: heyyy
+    path: heyyy

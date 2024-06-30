@@ -29,7 +29,6 @@ export type CrudAction = NonNullable<IgnoreCrudType>[number];
 
 
 const genericFileSchema = z.object({
-  url: z.string().optional(), // example "/" or "/admin"
   enable: z.boolean().optional(),
   templatePath: z.string().optional(),
 }).optional()
@@ -37,11 +36,13 @@ const genericFileSchema = z.object({
 const entitySchema = z.intersection(
   genericFileSchema,
   z.object({
-    ignore: ignoreCrudSchema,
+    path: z.string().optional(), // example "/" or "/admin"
+    ignore: ignoreCrudSchema.optional(),
   })
 )
 
 const nextAppDirectoryFileSchema = z.object({
+  path: z.string().optional(), // example "/" or "/admin"
   layout: genericFileSchema.optional(),
   page: genericFileSchema.optional(),
   loading: genericFileSchema.optional(),
