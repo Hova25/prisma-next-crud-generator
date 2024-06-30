@@ -5,6 +5,10 @@
     "husky": "7.0.4"
   },
   "scripts": {
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "gen:dev": "pnpm -C packages/generator dev",
+    "usage:dev": "pnpm -C packages/usage dev",
+    "usage:prisma:gen": "pnpm -C packages/usage prisma:gen",
+    "usage:prisma:push": "pnpm -C packages/usage prisma:push"
   }
 }
