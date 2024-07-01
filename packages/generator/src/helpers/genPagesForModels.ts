@@ -1,7 +1,7 @@
 import path from 'path'
 import { DMMF } from '@prisma/generator-helper'
 import { layout } from '../template/layout'
-import { dashboard } from '../template/dashboard'
+// import { dashboard } from '../template/dashboard'
 import { list } from '../template/list'
 import { show } from '../template/show'
 import { create } from '../template/create'
@@ -18,9 +18,21 @@ import { actions } from '../template/actions'
 import { pascalToCamelCase, pascalToSnakeCase, pluralize } from '../utils/strings'
 import { Config } from '../utils/configReader'
 import { isIgnored } from './configHelper'
+import { logger } from '@prisma/internals'
 
 export async function genPagesForModels(models: DMMF.Model[], output: string, config?: Config) {
-  const appPath =  path.join(output, 'app', config?.global?.dashboard?.path || "")
+  const {
+    global: {
+      dashboard: {
+        path: dashboardPath = "",
+        page: {
+          templatePath: dashboardPageTemplate = ""
+        } = {}
+      } = {}
+    } = {}
+  } = config;
+  
+  const appPath =  path.join(output, 'app', dashboardPath || "")
   const componentsPath = path.join(output, 'components')
   const actionsPath = path.join(output, 'actions')
   const sidebarFile = sidebar(models.map((model) => model.name))
@@ -28,7 +40,6 @@ export async function genPagesForModels(models: DMMF.Model[], output: string, co
   const globalFilePromises: Promise<void>[] = [
     writeFileSafely(path.join(output, 'lib', 'prisma.ts'), lib),
     writeFileSafely(path.join(appPath, 'layout.tsx'), layout),
-    writeFileSafely(path.join(appPath, 'page.tsx'), dashboard),
     writeFileSafely(path.join(componentsPath, 'Sidebar.tsx'), sidebarFile),
     writeFileSafely(path.join(componentsPath, 'ui', 'Input.tsx'), input),
     writeFileSafely(path.join(componentsPath, 'ui', 'Heading.tsx'), heading),
@@ -39,6 +50,21 @@ export async function genPagesForModels(models: DMMF.Model[], output: string, co
     ),
     writeFileSafely(path.join(componentsPath, 'ui', 'Select.tsx'), select),
   ];
+  
+  try {
+    const { dashboard } = await import(dashboardPageTemplate ? path.join(output,dashboardPageTemplate) :  path.resolve(__dirname, '../template/dashboard');
+    console.log("dasss", dashboard, path.resolve(__dirname, '../template/dashboard'))
+    // todo : bug on import when not comppiled js..
+    globalFilePromises.push(writeFileSafely(path.join(appPath, 'page.tsx'), dashboard))
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      logger.info("Error to write dashboard", e.message);
+    } else {
+      logger.info("An unknown error occurred on write dashboard");
+    }
+  }
+  
+  console.log(path.join(output,dashboardPageTemplate), path.join(appPath, 'page.tsx'))
   
   
   await Promise.all(globalFilePromises)

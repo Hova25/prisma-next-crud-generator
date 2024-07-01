@@ -51,14 +51,14 @@ const nextAppDirectoryFileSchema = z.object({
   globalError: genericFileSchema.optional(),
   // route: genericFileSchema.optional(), not root for the moment (because we need to create and spécific feature for this)
   template: genericFileSchema.optional(),
-}).optional()
+}).strict()
 
 const globalSchema = z.object({
   dashboard: nextAppDirectoryFileSchema.optional(),
 })
 
 const configSchema = z.object({
-  global: globalSchema.nullable().optional(),
+  global: globalSchema.strict(),
   entity: z.record(z.string(), entitySchema),
 }).optional();
 

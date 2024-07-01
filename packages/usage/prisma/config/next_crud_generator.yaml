@@ -1,16 +1,17 @@
-#global:
-#  dashboard:
-#    path: "admin"
+global:
+  dashboard:
+    path: "admin"
 #    page:
-#    layout:
+#      templatePath: "template/dashboard"
+
 
 entity:
-  user:
-    ignore:
-      - readList
-      - readOne
-      - delete
-      - create
-      - update
+#  user:
+#    ignore:
+#      - readList
+#      - readOne
+#      - delete
+#      - create
+#      - update
   test:
     path: heyyy
