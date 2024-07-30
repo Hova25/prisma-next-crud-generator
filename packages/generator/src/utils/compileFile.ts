@@ -2,8 +2,7 @@ import { exec, spawn } from "node:child_process";
 import path from 'path'
 import fs from 'fs'
 
-export const compileFile = (generatorDirectory: string, newFileName: string, rootDirectory: string) => {
-  const tscBinPath = path.resolve(rootDirectory, 'node_modules', '.bin', 'tsc')
+export const compileFile = (generatorDirectory: string, newFileName: string, tscBinPath: string) => {
   
   fs.access(tscBinPath, fs.constants.X_OK, (err) => {
     if (err) {

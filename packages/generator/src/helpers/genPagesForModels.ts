@@ -33,9 +33,15 @@ export async function genPagesForModels(models: DMMF.Model[], output: string, co
     } = {}
   } = config || {};
   
+  const rootDirectory = path.dirname(path.dirname(__dirname))
+  // todo: change generator directory in node modules
+  const generatorDirectory = path.join(rootDirectory, ".generator")
+  const tscBinPath = path.resolve(path.dirname(output), 'node_modules', '.bin', 'tsc')
+  
   const appPath =  path.join(output, 'app', dashboardPath || "")
   const componentsPath = path.join(output, 'components')
   const actionsPath = path.join(output, 'actions')
+  
   const sidebarFile = sidebar(models.map((model) => model.name))
   
   const globalFilePromises: Promise<void>[] = [
@@ -55,9 +61,7 @@ export async function genPagesForModels(models: DMMF.Model[], output: string, co
   try {
     let dashboardFileUrl = path.resolve(__dirname, '../template/dashboard')
     if(dashboardPageTemplate) {
-      const rootDirectory = path.dirname(path.dirname(__dirname))
-      const generatorDirectory = path.join(rootDirectory, ".generator")
-      console.log("----------------", )
+
       const newFileName = 'dashboard.ts'
       globalFilePromises.push(
         writeFileSafely(
@@ -67,7 +71,7 @@ export async function genPagesForModels(models: DMMF.Model[], output: string, co
           path.join(output,dashboardPageTemplate)
         )
       )
-      compileFile(generatorDirectory, newFileName, rootDirectory)
+      compileFile(generatorDirectory, newFileName, tscBinPath)
       dashboardFileUrl = path.resolve(generatorDirectory, newFileName)
     }
    
