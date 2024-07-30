@@ -1,8 +1,8 @@
 global:
   dashboard:
     path: "admin"
-#    page:
-#      templatePath: "template/dashboard"
+    page:
+      templatePath: "template/dashboard.tsx"
 
 
 entity:

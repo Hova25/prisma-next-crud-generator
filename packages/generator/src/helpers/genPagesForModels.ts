@@ -30,7 +30,7 @@ export async function genPagesForModels(models: DMMF.Model[], output: string, co
         } = {}
       } = {}
     } = {}
-  } = config;
+  } = config || {};
   
   const appPath =  path.join(output, 'app', dashboardPath || "")
   const componentsPath = path.join(output, 'components')
@@ -52,10 +52,20 @@ export async function genPagesForModels(models: DMMF.Model[], output: string, co
   ];
   
   try {
-    const { dashboard } = await import(dashboardPageTemplate ? path.join(output,dashboardPageTemplate) :  path.resolve(__dirname, '../template/dashboard');
-    console.log("dasss", dashboard, path.resolve(__dirname, '../template/dashboard'))
-    // todo : bug on import when not comppiled js..
-    globalFilePromises.push(writeFileSafely(path.join(appPath, 'page.tsx'), dashboard))
+    if(dashboardPageTemplate) {
+      globalFilePromises.push(
+        writeFileSafely(
+          path.join(appPath, 'page.tsx'),
+          undefined,
+          undefined,
+          path.join(output,dashboardPageTemplate)
+        )
+      )
+    }
+     else {
+      const { dashboard } = await import(path.resolve(__dirname, '../template/dashboard'));
+      globalFilePromises.push(writeFileSafely(path.join(appPath, 'page.tsx'), dashboard))
+    }
   } catch (e: unknown) {
     if (e instanceof Error) {
       logger.info("Error to write dashboard", e.message);
