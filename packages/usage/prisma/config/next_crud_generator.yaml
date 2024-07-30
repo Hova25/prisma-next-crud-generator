@@ -2,7 +2,7 @@ global:
   dashboard:
     path: "admin"
     page:
-      templatePath: "template/dashboard.tsx"
+      templatePath: "template/dashboard.ts"
 
 
 entity:

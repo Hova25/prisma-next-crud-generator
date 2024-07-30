@@ -19,6 +19,7 @@ import { pascalToCamelCase, pascalToSnakeCase, pluralize } from '../utils/string
 import { Config } from '../utils/configReader'
 import { isIgnored } from './configHelper'
 import { logger } from '@prisma/internals'
+import { compileFile } from '../utils/compileFile'
 
 export async function genPagesForModels(models: DMMF.Model[], output: string, config?: Config) {
   const {
@@ -52,20 +53,27 @@ export async function genPagesForModels(models: DMMF.Model[], output: string, co
   ];
   
   try {
+    let dashboardFileUrl = path.resolve(__dirname, '../template/dashboard')
     if(dashboardPageTemplate) {
+      const rootDirectory = path.dirname(path.dirname(__dirname))
+      const generatorDirectory = path.join(rootDirectory, ".generator")
+      console.log("----------------", )
+      const newFileName = 'dashboard.ts'
       globalFilePromises.push(
         writeFileSafely(
-          path.join(appPath, 'page.tsx'),
+          path.join(generatorDirectory, newFileName),
           undefined,
           undefined,
           path.join(output,dashboardPageTemplate)
         )
       )
+      compileFile(generatorDirectory, newFileName, rootDirectory)
+      dashboardFileUrl = path.resolve(generatorDirectory, newFileName)
     }
-     else {
-      const { dashboard } = await import(path.resolve(__dirname, '../template/dashboard'));
-      globalFilePromises.push(writeFileSafely(path.join(appPath, 'page.tsx'), dashboard))
-    }
+   
+    const { dashboard } = await import(dashboardFileUrl);
+    globalFilePromises.push(writeFileSafely(path.join(appPath, 'page.tsx'), dashboard))
+    
   } catch (e: unknown) {
     if (e instanceof Error) {
       logger.info("Error to write dashboard", e.message);
