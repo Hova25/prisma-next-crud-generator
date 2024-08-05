@@ -18,8 +18,7 @@ import { actions } from '../template/actions'
 import { pascalToCamelCase, pascalToSnakeCase, pluralize } from '../utils/strings'
 import { Config } from '../utils/configReader'
 import { isIgnored } from './configHelper'
-import { logger } from '@prisma/internals'
-import { compileFile } from '../utils/compileFile'
+import { genPersonalizedFile } from '../generator/genPersonalizedFile'
 
 export async function genPagesForModels(models: DMMF.Model[], output: string, config?: Config) {
   const {
@@ -27,7 +26,10 @@ export async function genPagesForModels(models: DMMF.Model[], output: string, co
       dashboard: {
         path: dashboardPath = "",
         page: {
-          templatePath: dashboardPageTemplate = ""
+          templatePath: dashboardPagePath = ""
+        } = {},
+        layout: {
+          templatePath: dashboardLayoutPath = ""
         } = {}
       } = {}
     } = {}
@@ -46,7 +48,6 @@ export async function genPagesForModels(models: DMMF.Model[], output: string, co
   
   const globalFilePromises: Promise<void>[] = [
     writeFileSafely(path.join(output, 'lib', 'prisma.ts'), lib),
-    writeFileSafely(path.join(appPath, 'layout.tsx'), layout),
     writeFileSafely(path.join(componentsPath, 'Sidebar.tsx'), sidebarFile),
     writeFileSafely(path.join(componentsPath, 'ui', 'Input.tsx'), input),
     writeFileSafely(path.join(componentsPath, 'ui', 'Heading.tsx'), heading),
@@ -58,35 +59,24 @@ export async function genPagesForModels(models: DMMF.Model[], output: string, co
     writeFileSafely(path.join(componentsPath, 'ui', 'Select.tsx'), select),
   ];
   
-  try {
-    let dashboardFileUrl = path.resolve(__dirname, '../template/dashboard')
-    if(dashboardPageTemplate) {
-
-      const newFileName = 'dashboard.ts'
-      globalFilePromises.push(
-        writeFileSafely(
-          path.join(generatorDirectory, newFileName),
-          undefined,
-          undefined,
-          path.join(output,dashboardPageTemplate)
-        )
-      )
-      compileFile(generatorDirectory, newFileName, tscBinPath)
-      dashboardFileUrl = path.resolve(generatorDirectory, newFileName)
-    }
-   
-    const { dashboard } = await import(dashboardFileUrl);
-    globalFilePromises.push(writeFileSafely(path.join(appPath, 'page.tsx'), dashboard))
-    
-  } catch (e: unknown) {
-    if (e instanceof Error) {
-      logger.info("Error to write dashboard", e.message);
-    } else {
-      logger.info("An unknown error occurred on write dashboard");
-    }
-  }
+  await genPersonalizedFile({
+    defaultFileUrl: path.resolve(__dirname, '../template/dashboard'),
+    templatePath: dashboardPagePath,
+    specificOutputFileName: "page",
+    generatorDirectory,
+    output,
+    tscBinPath,
+    appPath
+  })
   
-  console.log(path.join(output,dashboardPageTemplate), path.join(appPath, 'page.tsx'))
+  await genPersonalizedFile({
+    defaultFileUrl: path.resolve(__dirname, '../template/layout'),
+    templatePath: dashboardLayoutPath,
+    generatorDirectory,
+    output,
+    tscBinPath,
+    appPath
+  })
   
   
   await Promise.all(globalFilePromises)

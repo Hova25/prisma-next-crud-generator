@@ -3,6 +3,8 @@ global:
     path: "admin"
     page:
       templatePath: "template/dashboard.ts"
+    layout:
+      templatePath: "template/layout.ts"
 
 
 entity:
