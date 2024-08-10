@@ -14,6 +14,14 @@ export const genDashboard = async(config: Config, paths: Paths) => {
         layout: {
           disable: dashboardLayoutDisable = false,
           templatePath: dashboardLayoutPath = ""
+        } = {},
+        template: {
+          disable: dashboardTemplateDisable = false,
+          templatePath: dashboardTemplatePath = ""
+        } = {},
+        loading: {
+          disable: dashboardLoadingDisable = false,
+          templatePath: dashboardLoadingPath = ""
         } = {}
       } = {},
     } = {}
@@ -32,6 +40,25 @@ export const genDashboard = async(config: Config, paths: Paths) => {
     await genPersonalizedFile({
       defaultFileUrl: path.resolve(__dirname, '../template/layout'),
       templatePath: dashboardLayoutPath,
+      specificOutputFileName: 'layout',
+      paths
+    })
+  }
+  
+  if(!dashboardTemplateDisable) {
+    await genPersonalizedFile({
+      defaultFileUrl: '',
+      templatePath: dashboardTemplatePath,
+      specificOutputFileName: 'template',
+      paths
+    })
+  }
+  
+  if(!dashboardLoadingDisable) {
+    await genPersonalizedFile({
+      defaultFileUrl: '',
+      templatePath: dashboardLoadingPath,
+      specificOutputFileName: 'loading',
       paths
     })
   }

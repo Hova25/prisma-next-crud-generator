@@ -43,13 +43,13 @@ const entitySchema = z.intersection(
 
 const nextAppDirectoryFileSchema = z.object({
   path: z.string().optional(), // example "/" or "/admin"
-  layout: genericFileSchema.optional(),
   page: genericFileSchema.optional(),
-  loading: genericFileSchema.optional(),
-  notFound: genericFileSchema.optional(),
-  error: genericFileSchema.optional(),
-  globalError: genericFileSchema.optional(),
+  layout: genericFileSchema.optional(),
   template: genericFileSchema.optional(),
+  loading: genericFileSchema.optional(),
+  // notFound: genericFileSchema.optional(),
+  // error: genericFileSchema.optional(),
+  // globalError: genericFileSchema.optional(),
   // route: genericFileSchema.optional(), not root for the moment (because we need to create and spécific feature for this)
   // default: genericFileSchema.optional(), not root for the moment (because we need to create and spécific feature for this)
 }).strict()
