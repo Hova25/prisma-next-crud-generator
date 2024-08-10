@@ -29,7 +29,7 @@ export type CrudAction = NonNullable<IgnoreCrudType>[number];
 
 
 const genericFileSchema = z.object({
-  enable: z.boolean().optional(),
+  disable: z.boolean().optional(),
   templatePath: z.string().optional(),
 }).optional()
 
@@ -49,17 +49,21 @@ const nextAppDirectoryFileSchema = z.object({
   notFound: genericFileSchema.optional(),
   error: genericFileSchema.optional(),
   globalError: genericFileSchema.optional(),
-  // route: genericFileSchema.optional(), not root for the moment (because we need to create and spécific feature for this)
   template: genericFileSchema.optional(),
+  // route: genericFileSchema.optional(), not root for the moment (because we need to create and spécific feature for this)
+  // default: genericFileSchema.optional(), not root for the moment (because we need to create and spécific feature for this)
 }).strict()
 
 const globalSchema = z.object({
   dashboard: nextAppDirectoryFileSchema.optional(),
+  prismaConfig: genericFileSchema.optional().and(
+    z.object({ path: z.string().optional()})
+  )
 })
 
 const configSchema = z.object({
   global: globalSchema.strict(),
-  entity: z.record(z.string(), entitySchema),
+  entity: z.record(z.string(), entitySchema).optional(),
 }).optional();
 
 export type Config = z.infer<typeof configSchema>;

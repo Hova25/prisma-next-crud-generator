@@ -3,24 +3,43 @@ import { writeFileSafely } from '../utils/writeFileSafely'
 import { compileFile } from '../utils/compileFile'
 import { logger } from '@prisma/internals'
 
-type GenPersonalizedFile = {
-  templatePath: string
-  generatorDirectory: string
-  output: string
-  tscBinPath: string
-  appPath: string
-  defaultFileUrl: string
-  specificOutputFileName?: string
+export type Paths = {
+  generatorDirectory: string,
+  outputRootDirectory: string,
+  tscBinPath: string,
+  appPath: string,
 }
 
+type GenPersonalizedFile = {
+  templatePath: string
+  paths: Paths,
+  defaultFileUrl: string
+  specificOutputFileName?: string
+  outputFormat?: 'ts' | 'tsx'
+}
+
+/**
+ *
+ * @param defaultFileUrl is where we can find the default file
+ * @param templatePath is the personalised template path
+ * @param generatorDirectory is where we compile the personalised file
+ * @param outputRootDirectory is a root folder (example: src)
+ * @param tscBinPath is where we can find the tsc binary to compile file
+ * @param appPath is where we create the files
+ * @param specificOutputFileName is if we want change fileName when we copy it
+ * @param outputFormat TS or TSX default TSX
+ */
 export const genPersonalizedFile = async({
   defaultFileUrl,
   templatePath,
-  generatorDirectory,
-  output,
-  tscBinPath,
-  appPath,
-  specificOutputFileName
+  specificOutputFileName,
+  outputFormat = 'tsx',
+  paths: {
+   generatorDirectory,
+   outputRootDirectory,
+   tscBinPath,
+   appPath
+  },
 }: GenPersonalizedFile) => {
   try {
     let fileUrl = defaultFileUrl
@@ -32,7 +51,7 @@ export const genPersonalizedFile = async({
         path.join(generatorDirectory, fileName),
         undefined,
         undefined,
-        path.join(output,templatePath)
+        path.join(outputRootDirectory, templatePath)
       )
       
       compileFile(generatorDirectory, fileName, tscBinPath)
@@ -41,9 +60,7 @@ export const genPersonalizedFile = async({
     
     const importedTemplate = await import(fileUrl);
     const file = fileName.split(".")[0];
-    await writeFileSafely(path.join(appPath, (specificOutputFileName || file) + ".tsx" ), importedTemplate[file]);
-    // await writeFileSafely(path.join(appPath, (specificOutputFileName || file) + ".tsx" ), importedTemplate[file]);
-    
+    await writeFileSafely(path.join(appPath, `${(specificOutputFileName || file)}.${outputFormat}`), importedTemplate[file]);
   } catch (e: unknown) {
     if (e instanceof Error) {
       logger.info(`Error to write ${templatePath}`, e.message);

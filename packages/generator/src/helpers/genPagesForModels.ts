@@ -18,19 +18,19 @@ import { actions } from '../template/actions'
 import { pascalToCamelCase, pascalToSnakeCase, pluralize } from '../utils/strings'
 import { Config } from '../utils/configReader'
 import { isIgnored } from './configHelper'
-import { genPersonalizedFile } from '../generator/genPersonalizedFile'
+import { genPersonalizedFile, Paths } from '../generator/genPersonalizedFile'
+import { genDashboard } from '../generator/genDashboard'
 
-export async function genPagesForModels(models: DMMF.Model[], output: string, config?: Config) {
+export async function genPagesForModels(models: DMMF.Model[], outputRootDirectory: string, config?: Config) {
   const {
     global: {
       dashboard: {
         path: dashboardPath = "",
-        page: {
-          templatePath: dashboardPagePath = ""
-        } = {},
-        layout: {
-          templatePath: dashboardLayoutPath = ""
-        } = {}
+      } = {},
+      prismaConfig: {
+        disable: prismaConfigDisable = false,
+        templatePath: prismaConfigTemplatePath = '',
+        path: prismaConfigPath = ''
       } = {}
     } = {}
   } = config || {};
@@ -38,16 +38,15 @@ export async function genPagesForModels(models: DMMF.Model[], output: string, co
   const rootDirectory = path.dirname(path.dirname(__dirname))
   // todo: change generator directory in node modules
   const generatorDirectory = path.join(rootDirectory, ".generator")
-  const tscBinPath = path.resolve(path.dirname(output), 'node_modules', '.bin', 'tsc')
+  const tscBinPath = path.resolve(path.dirname(outputRootDirectory), 'node_modules', '.bin', 'tsc')
   
-  const appPath =  path.join(output, 'app', dashboardPath || "")
-  const componentsPath = path.join(output, 'components')
-  const actionsPath = path.join(output, 'actions')
+  const appPath =  path.join(outputRootDirectory, 'app', dashboardPath || "")
+  const componentsPath = path.join(outputRootDirectory, 'components')
+  const actionsPath = path.join(outputRootDirectory, 'actions')
   
   const sidebarFile = sidebar(models.map((model) => model.name))
   
   const globalFilePromises: Promise<void>[] = [
-    writeFileSafely(path.join(output, 'lib', 'prisma.ts'), lib),
     writeFileSafely(path.join(componentsPath, 'Sidebar.tsx'), sidebarFile),
     writeFileSafely(path.join(componentsPath, 'ui', 'Input.tsx'), input),
     writeFileSafely(path.join(componentsPath, 'ui', 'Heading.tsx'), heading),
@@ -59,25 +58,27 @@ export async function genPagesForModels(models: DMMF.Model[], output: string, co
     writeFileSafely(path.join(componentsPath, 'ui', 'Select.tsx'), select),
   ];
   
-  await genPersonalizedFile({
-    defaultFileUrl: path.resolve(__dirname, '../template/dashboard'),
-    templatePath: dashboardPagePath,
-    specificOutputFileName: "page",
+  if(!prismaConfigDisable) {
+    await genPersonalizedFile({
+      defaultFileUrl: path.resolve(__dirname, '../template/lib'),
+      templatePath: prismaConfigTemplatePath,
+      specificOutputFileName: "prisma",
+      outputFormat: 'ts',
+      paths: {
+        generatorDirectory,
+        outputRootDirectory,
+        tscBinPath,
+        appPath: path.join(outputRootDirectory, prismaConfigPath ||  'lib'),
+      },
+    })
+  }
+  
+  await genDashboard(config, {
     generatorDirectory,
-    output,
+    outputRootDirectory,
     tscBinPath,
     appPath
-  })
-  
-  await genPersonalizedFile({
-    defaultFileUrl: path.resolve(__dirname, '../template/layout'),
-    templatePath: dashboardLayoutPath,
-    generatorDirectory,
-    output,
-    tscBinPath,
-    appPath
-  })
-  
+  });
   
   await Promise.all(globalFilePromises)
 

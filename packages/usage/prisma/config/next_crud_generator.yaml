@@ -5,9 +5,10 @@ global:
       templatePath: "template/dashboard.ts"
     layout:
       templatePath: "template/layout.ts"
+  prismaConfig:
+    templatePath: "template/prismaLib.ts"
 
-
-entity:
+#entity:
 #  user:
 #    ignore:
 #      - readList
@@ -15,5 +16,5 @@ entity:
 #      - delete
 #      - create
 #      - update
-  test:
-    path: heyyy
+#  test:
+#    path: heyyy
