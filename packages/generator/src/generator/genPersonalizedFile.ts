@@ -47,7 +47,8 @@ export const genPersonalizedFile = async({
   try {
     let fileUrl = defaultFileUrl
     let fileName = fileUrl.split("/").at(-1)!
-    if(!defaultFile && !templatePath) {
+    
+    if(!defaultFileUrl && !defaultFile && !templatePath) {
       return;
     }
     

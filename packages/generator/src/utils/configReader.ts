@@ -73,7 +73,7 @@ const componentsSchema = z.object({
   path: z.string().optional(),
   sidebar: genericFileSchema.optional(),
   ui: componentsUiSchema.optional()
-})
+}).strict()
 
 const configSchema = z.object({
   global: globalSchema.optional(),
@@ -98,5 +98,6 @@ export const getConfig = (options: GeneratorOptions): Config | undefined =>  {
     } else {
       console.error('Unexpected error in parse config file:');
     }
+    throw "Stop Process"
   }
 }

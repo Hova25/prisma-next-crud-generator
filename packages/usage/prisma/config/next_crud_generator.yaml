@@ -7,7 +7,10 @@ global:
       templatePath: "template/layout.ts"
   prismaConfig:
     templatePath: "template/prismaLib.ts"
-
+#components:
+#  ui:
+#    input:
+#      templatePath: "template/components/input.ts"
 #entity:
 #  user:
 #    ignore:

@@ -11,8 +11,8 @@ export default function RootLayout({
     <html lang="en">
       <body className="flex">
         <Sidebar />
+        --- specifffiic layout
         <main className="flex-1 px-4 pb-2 pt-16 lg:pt-2 min-h-screen w-screen flex flex-col">
-          heyyyy Specific layout
           {children}
         </main>
       </body>
