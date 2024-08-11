@@ -1,11 +1,11 @@
-import { CallBackObject } from 'prisma-next-crud-generator'
+import { CallBackObject, pascalToSnakeCase, pluralize } from 'prisma-next-crud-generator'
 
 exports.sidebar = ({ models = [] }: CallBackObject) => {
   const modelsNames = models.map(model => model.name);
   const resourcesList = modelsNames.reduce((result, modelName) => {
-    const modelNamePlural = modelName
-    const modelNameSnakeCase = modelName
-    const modelNameSnakeCasePlural = modelNameSnakeCase
+    const modelNamePlural = pluralize(modelName)
+    const modelNameSnakeCase = pascalToSnakeCase(modelName)
+    const modelNameSnakeCasePlural = pluralize(modelNameSnakeCase)
 
     return (
       result +
@@ -15,7 +15,7 @@ exports.sidebar = ({ models = [] }: CallBackObject) => {
           href="/${modelNameSnakeCasePlural}"
           className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-indigo-100 hover:text-gray-700"
         >
-          ${modelNamePlural} heey
+          ${modelNamePlural} heey ---
         </Link>
       </li>
 `

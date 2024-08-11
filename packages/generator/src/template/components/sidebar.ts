@@ -1,5 +1,5 @@
-import { pascalToSnakeCase, pluralize } from '../../utils/strings'
 import { CallBackObject } from '../../generator/genPersonalizedFile'
+import { pascalToSnakeCase, pluralize } from '../../utils/strings'
 
 export const sidebar = ({ models = [] }: CallBackObject) => {
   const modelsNames = models.map(model => model.name);
