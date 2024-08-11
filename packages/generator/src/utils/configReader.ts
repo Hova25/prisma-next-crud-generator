@@ -61,8 +61,23 @@ const globalSchema = z.object({
   )
 })
 
+const componentsUiSchema = z.object({
+  breadcrumbs: genericFileSchema.optional().optional(),
+  heading: genericFileSchema.optional().optional(),
+  button: genericFileSchema.optional().optional(),
+  input: genericFileSchema.optional().optional(),
+  select: genericFileSchema.optional().optional(),
+})
+
+const componentsSchema = z.object({
+  path: z.string().optional(),
+  sidebar: genericFileSchema.optional(),
+  ui: componentsUiSchema.optional()
+})
+
 const configSchema = z.object({
-  global: globalSchema.strict(),
+  global: globalSchema.optional(),
+  components: componentsSchema.optional(),
   entity: z.record(z.string(), entitySchema).optional(),
 }).optional();
 

@@ -20,6 +20,7 @@ import { Config } from '../utils/configReader'
 import { isIgnored } from './configHelper'
 import { genPersonalizedFile, Paths } from '../generator/genPersonalizedFile'
 import { genDashboard } from '../generator/genDashboard'
+import { genComponents } from '../generator/genComponents'
 
 export async function genPagesForModels(models: DMMF.Model[], outputRootDirectory: string, config?: Config) {
   const {
@@ -32,6 +33,9 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
         templatePath: prismaConfigTemplatePath = '',
         path: prismaConfigPath = ''
       } = {}
+    } = {},
+    components: {
+      path: componentsSpecificPath = ''
     } = {}
   } = config || {};
   
@@ -41,22 +45,7 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
   const tscBinPath = path.resolve(path.dirname(outputRootDirectory), 'node_modules', '.bin', 'tsc')
   
   const appPath =  path.join(outputRootDirectory, 'app', dashboardPath || "")
-  const componentsPath = path.join(outputRootDirectory, 'components')
   const actionsPath = path.join(outputRootDirectory, 'actions')
-  
-  const sidebarFile = sidebar(models.map((model) => model.name))
-  
-  const globalFilePromises: Promise<void>[] = [
-    writeFileSafely(path.join(componentsPath, 'Sidebar.tsx'), sidebarFile),
-    writeFileSafely(path.join(componentsPath, 'ui', 'Input.tsx'), input),
-    writeFileSafely(path.join(componentsPath, 'ui', 'Heading.tsx'), heading),
-    writeFileSafely(path.join(componentsPath, 'ui', 'Button.tsx'), button),
-    writeFileSafely(
-      path.join(componentsPath, 'ui', 'Breadcrumbs.tsx'),
-      breadcrumbs,
-    ),
-    writeFileSafely(path.join(componentsPath, 'ui', 'Select.tsx'), select),
-  ];
   
   if(!prismaConfigDisable) {
     await genPersonalizedFile({
@@ -73,14 +62,21 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
     })
   }
   
+  const componentsPath = path.join(outputRootDirectory, componentsSpecificPath || 'components')
+  
+  await genComponents(config, {
+    generatorDirectory,
+    outputRootDirectory,
+    tscBinPath,
+    appPath: componentsPath
+  }, models);
+  
   await genDashboard(config, {
     generatorDirectory,
     outputRootDirectory,
     tscBinPath,
     appPath
   });
-  
-  await Promise.all(globalFilePromises)
 
   for (const model of models) {
     const modelNameCamelCase = pascalToCamelCase(model.name)

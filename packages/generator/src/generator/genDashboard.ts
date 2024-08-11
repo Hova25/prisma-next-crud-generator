@@ -6,7 +6,6 @@ export const genDashboard = async(config: Config, paths: Paths) => {
   const {
     global: {
       dashboard: {
-        path: dashboardPath = "",
         page: {
           disable: dashboardPageDisable = false,
           templatePath: dashboardPagePath = ""
