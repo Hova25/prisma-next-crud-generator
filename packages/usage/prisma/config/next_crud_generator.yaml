@@ -8,6 +8,8 @@ global:
   prismaConfig:
     templatePath: "template/prismaLib.ts"
 #components:
+#  sidebar:
+#    templatePath: "template/sidebar.ts"
 #  ui:
 #    input:
 #      templatePath: "template/components/input.ts"
