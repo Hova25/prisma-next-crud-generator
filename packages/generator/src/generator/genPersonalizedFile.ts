@@ -67,7 +67,7 @@ export const genPersonalizedFile = async({
         path.join(outputRootDirectory, templatePath)
       )
       
-      compileFile(generatorDirectory, fileName, tscBinPath)
+      await compileFile(generatorDirectory, fileName, tscBinPath)
       fileUrl = path.resolve(generatorDirectory, fileName.replace(".ts", ".js"))
     }
     
