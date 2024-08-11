@@ -2,6 +2,7 @@ import path from 'path'
 import { writeFileSafely } from '../utils/writeFileSafely'
 import { compileFile } from '../utils/compileFile'
 import { logger } from '@prisma/internals'
+import { DMMF } from '@prisma/generator-helper'
 
 export type Paths = {
   generatorDirectory: string,
@@ -14,15 +15,16 @@ type GenPersonalizedFile = {
   templatePath: string
   paths: Paths,
   defaultFileUrl?: string
-  defaultFile?: string
   specificOutputFileName?: string
   outputFormat?: 'ts' | 'tsx'
+  callBackObject?: {
+    models?: DMMF.Model[]
+  }
 }
 
 /**
  *
  * @param defaultFileUrl is where we can find the default file
- * @param defaultFile is the default file in string format
  * @param templatePath is the personalised template path
  * @param generatorDirectory is where we compile the personalised file
  * @param outputRootDirectory is a root folder (example: src)
@@ -33,7 +35,6 @@ type GenPersonalizedFile = {
  */
 export const genPersonalizedFile = async({
   defaultFileUrl = '',
-  defaultFile = '',
   templatePath,
   specificOutputFileName,
   outputFormat = 'tsx',
@@ -43,12 +44,15 @@ export const genPersonalizedFile = async({
    tscBinPath,
    appPath
   },
+  callBackObject: {
+    models
+  } = {}
 }: GenPersonalizedFile) => {
   try {
     let fileUrl = defaultFileUrl
     let fileName = fileUrl.split("/").at(-1)!
     
-    if(!defaultFileUrl && !defaultFile && !templatePath) {
+    if(!defaultFileUrl && !templatePath) {
       return;
     }
     
@@ -66,22 +70,26 @@ export const genPersonalizedFile = async({
       fileUrl = path.resolve(generatorDirectory, fileName)
     }
     
-    const importedTemplate = !templatePath ? defaultFile || await import(fileUrl): await import(fileUrl);
+    const importedTemplate = await import(fileUrl);
     const file = fileName.split(".")[0];
+    
+    let content = importedTemplate[file]
+    
+    if(typeof content === 'function') {
+      content = content(models)
+    }
     
     await writeFileSafely(
       path.join(
         appPath,
         `${(specificOutputFileName || file)}.${outputFormat}`
       ),
-      !templatePath && defaultFile ?
-        importedTemplate :
-        importedTemplate[file]
+      content
     );
     
   } catch (e: unknown) {
     if (e instanceof Error) {
-      logger.info(`Error to write ${templatePath}`, e.message);
+      logger.info(`Error to write ${specificOutputFileName} ${templatePath}`, e.message);
     } else {
       logger.info(`An unknown error occurred on write ${templatePath}`);
     }

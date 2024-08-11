@@ -39,10 +39,13 @@ export const genComponents = async(config: Config, paths: Paths, models: DMMF.Mo
   
   if(!sidebarDisable) {
     await genPersonalizedFile({
-      defaultFile: sidebar(models.map((model) => model.name)),
+      defaultFileUrl: path.resolve(__dirname, '../template/components/sidebar'),
       templatePath: sidebarTemplatePath,
       specificOutputFileName: "Sidebar",
-      paths
+      paths,
+      callBackObject: {
+        models
+      }
     })
   }
   const uiPath = {

@@ -1,12 +1,9 @@
-import { pascalToSnakeCase, pluralize } from '../../utils/strings'
-import { DMMF } from '@prisma/generator-helper'
-
-export const sidebar = (models: DMMF.Model[] = []) => {
+exports.sidebar = (models) => {
   const modelsNames = models.map(model => model.name);
   const resourcesList = modelsNames.reduce((result, modelName) => {
-    const modelNamePlural = pluralize(modelName)
-    const modelNameSnakeCase = pascalToSnakeCase(modelName)
-    const modelNameSnakeCasePlural = pluralize(modelNameSnakeCase)
+    const modelNamePlural = modelName
+    const modelNameSnakeCase = modelName
+    const modelNameSnakeCasePlural = modelNameSnakeCase
 
     return (
       result +
@@ -16,7 +13,7 @@ export const sidebar = (models: DMMF.Model[] = []) => {
           href="/${modelNameSnakeCasePlural}"
           className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-indigo-100 hover:text-gray-700"
         >
-          ${modelNamePlural}
+          ${modelNamePlural} heey
         </Link>
       </li>
 `
