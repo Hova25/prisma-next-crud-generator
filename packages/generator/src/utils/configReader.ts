@@ -67,7 +67,7 @@ const componentsUiSchema = z.object({
   button: genericFileSchema.optional().optional(),
   input: genericFileSchema.optional().optional(),
   select: genericFileSchema.optional().optional(),
-})
+}).strict()
 
 const componentsSchema = z.object({
   path: z.string().optional(),
