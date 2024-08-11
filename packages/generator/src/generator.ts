@@ -1,7 +1,7 @@
 import { generatorHandler, GeneratorOptions } from '@prisma/generator-helper'
 import { logger } from '@prisma/internals'
 import { GENERATOR_NAME } from './constants'
-import { genPagesForModels } from './helpers/genPagesForModels'
+import { genPagesForModels } from './generator/genPagesForModels'
 import { getConfig } from './utils/configReader'
 
 const { version } = require('../package.json')

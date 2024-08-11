@@ -17,10 +17,10 @@ import { select } from '../template/components/ui/select'
 import { actions } from '../template/actions'
 import { pascalToCamelCase, pascalToSnakeCase, pluralize } from '../utils/strings'
 import { Config } from '../utils/configReader'
-import { isIgnored } from './configHelper'
-import { genPersonalizedFile, Paths } from '../generator/genPersonalizedFile'
-import { genDashboard } from '../generator/genDashboard'
-import { genComponents } from '../generator/genComponents'
+import { isIgnored } from '../helpers/configHelper'
+import { genPersonalizedFile, Paths } from './genPersonalizedFile'
+import { genDashboard } from './genDashboard'
+import { genComponents } from './genComponents'
 
 export async function genPagesForModels(models: DMMF.Model[], outputRootDirectory: string, config?: Config) {
   const {
