@@ -67,7 +67,7 @@ export const genPersonalizedFile = async({
       )
       
       compileFile(generatorDirectory, fileName, tscBinPath)
-      fileUrl = path.resolve(generatorDirectory, fileName)
+      fileUrl = path.resolve(generatorDirectory, fileName.replace(".ts", ".js"))
     }
     
     const importedTemplate = await import(fileUrl);

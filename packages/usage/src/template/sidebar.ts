@@ -1,4 +1,4 @@
-exports.sidebar = (models) => {
+exports.sidebar = (models: any[]) => {
   const modelsNames = models.map(model => model.name);
   const resourcesList = modelsNames.reduce((result, modelName) => {
     const modelNamePlural = modelName
