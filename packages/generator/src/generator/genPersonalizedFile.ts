@@ -11,15 +11,17 @@ export type Paths = {
   appPath: string,
 }
 
+export type CallBackObject = {
+  models?: DMMF.Model[]
+}
+
 type GenPersonalizedFile = {
   templatePath: string
   paths: Paths,
   defaultFileUrl?: string
   specificOutputFileName?: string
   outputFormat?: 'ts' | 'tsx'
-  callBackObject?: {
-    models?: DMMF.Model[]
-  }
+  callBackObject?: CallBackObject
 }
 
 /**
@@ -32,6 +34,7 @@ type GenPersonalizedFile = {
  * @param appPath is where we create the files
  * @param specificOutputFileName is if we want change fileName when we copy it
  * @param outputFormat TS or TSX default TSX
+ * @param callBackObject
  */
 export const genPersonalizedFile = async({
   defaultFileUrl = '',
@@ -44,9 +47,7 @@ export const genPersonalizedFile = async({
    tscBinPath,
    appPath
   },
-  callBackObject: {
-    models
-  } = {}
+  callBackObject
 }: GenPersonalizedFile) => {
   try {
     let fileUrl = defaultFileUrl
@@ -76,7 +77,7 @@ export const genPersonalizedFile = async({
     let content = importedTemplate[file]
     
     if(typeof content === 'function') {
-      content = content(models)
+      content = content(callBackObject)
     }
     
     await writeFileSafely(

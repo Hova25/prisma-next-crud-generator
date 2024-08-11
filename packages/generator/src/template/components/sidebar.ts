@@ -1,7 +1,7 @@
 import { pascalToSnakeCase, pluralize } from '../../utils/strings'
-import { DMMF } from '@prisma/generator-helper'
+import { CallBackObject } from '../../generator/genPersonalizedFile'
 
-export const sidebar = (models: DMMF.Model[] = []) => {
+export const sidebar = ({ models = [] }: CallBackObject) => {
   const modelsNames = models.map(model => model.name);
   const resourcesList = modelsNames.reduce((result, modelName) => {
     const modelNamePlural = pluralize(modelName)

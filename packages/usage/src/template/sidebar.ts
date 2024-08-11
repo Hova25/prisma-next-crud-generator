@@ -1,4 +1,6 @@
-exports.sidebar = (models: any[]) => {
+import { CallBackObject } from 'prisma-next-crud-generator/dist/generator/genPersonalizedFile'
+
+exports.sidebar = ({ models = [] }: CallBackObject) => {
   const modelsNames = models.map(model => model.name);
   const resourcesList = modelsNames.reduce((result, modelName) => {
     const modelNamePlural = modelName
