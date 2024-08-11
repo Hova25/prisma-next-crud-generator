@@ -1,6 +1,6 @@
-// import { CallBackObject } from 'prisma-next-crud-generator'
+import { CallBackObject } from 'prisma-next-crud-generator'
 
-exports.sidebar = ({ models = [] }: any) => {
+exports.sidebar = ({ models = [] }: CallBackObject) => {
   const modelsNames = models.map(model => model.name);
   const resourcesList = modelsNames.reduce((result, modelName) => {
     const modelNamePlural = modelName
