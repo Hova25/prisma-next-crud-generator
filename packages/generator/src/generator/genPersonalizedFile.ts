@@ -3,6 +3,7 @@ import { writeFileSafely } from '../utils/writeFileSafely'
 import { compileFile } from '../utils/compileFile'
 import { logger } from '@prisma/internals'
 import { DMMF } from '@prisma/generator-helper'
+import { Config } from '../utils/configReader'
 
 export type Paths = {
   generatorDirectory: string,
@@ -13,6 +14,7 @@ export type Paths = {
 
 export type CallBackObject = {
   models?: DMMF.Model[]
+  config?: Config
 }
 
 type GenPersonalizedFile = {

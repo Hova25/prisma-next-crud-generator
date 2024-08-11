@@ -1,18 +1,22 @@
 import { CallBackObject, pascalToSnakeCase, pluralize } from 'prisma-next-crud-generator'
 
-exports.sidebar = ({ models = [] }: CallBackObject) => {
+exports.sidebar = ({ models = [], config }: CallBackObject) => {
   const modelsNames = models.map(model => model.name);
+  const specificAdminPath = config?.global?.dashboard?.path || ''
+  
   const resourcesList = modelsNames.reduce((result, modelName) => {
     const modelNamePlural = pluralize(modelName)
     const modelNameSnakeCase = pascalToSnakeCase(modelName)
     const modelNameSnakeCasePlural = pluralize(modelNameSnakeCase)
 
+    const linkTo = specificAdminPath ? `/${specificAdminPath}/${modelNameSnakeCasePlural}` : `/${modelNameSnakeCasePlural}`
+    
     return (
       result +
       `
       <li>
         <Link
-          href="/${modelNameSnakeCasePlural}"
+          href="${linkTo}"
           className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-indigo-100 hover:text-gray-700"
         >
           ${modelNamePlural} heey ---
@@ -64,7 +68,7 @@ exports.sidebar = ({ models = [] }: CallBackObject) => {
                 isSidebarOpen ? 'translate-x-0' : '',
               )}
             >
-              <Link href="/">
+              <Link href="/${specificAdminPath}">
                 <span className="grid h-10 w-32 place-content-center rounded-lg bg-indigo-100 text-xs text-gray-600">
                   Logo
                 </span>
@@ -78,7 +82,7 @@ exports.sidebar = ({ models = [] }: CallBackObject) => {
 
           <aside className="hidden lg:flex h-screen flex-col justify-between border-e bg-indigo-50">
             <div className="px-4 py-6">
-              <Link href="/">
+              <Link href="/${specificAdminPath}">
                 <span className="grid h-10 w-32 place-content-center rounded-lg bg-indigo-100 text-xs text-gray-600">
                   Logo
                 </span>

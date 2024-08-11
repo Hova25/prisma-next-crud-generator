@@ -1,8 +1,8 @@
-import { genPersonalizedFile, Paths } from './genPersonalizedFile'
+import { CallBackObject, genPersonalizedFile, Paths } from './genPersonalizedFile'
 import path from 'path'
 import { Config } from '../utils/configReader'
 
-export const genDashboard = async(config: Config, paths: Paths) => {
+export const genDashboard = async(config: Config, paths: Paths, callBackObject: CallBackObject) => {
   const {
     global: {
       dashboard: {
@@ -31,7 +31,8 @@ export const genDashboard = async(config: Config, paths: Paths) => {
       defaultFileUrl: path.resolve(__dirname, '../template/dashboard'),
       templatePath: dashboardPagePath,
       specificOutputFileName: "page",
-      paths
+      paths,
+      callBackObject
     })
   }
   
@@ -40,7 +41,8 @@ export const genDashboard = async(config: Config, paths: Paths) => {
       defaultFileUrl: path.resolve(__dirname, '../template/layout'),
       templatePath: dashboardLayoutPath,
       specificOutputFileName: 'layout',
-      paths
+      paths,
+      callBackObject
     })
   }
   
@@ -49,7 +51,8 @@ export const genDashboard = async(config: Config, paths: Paths) => {
       defaultFileUrl: '',
       templatePath: dashboardTemplatePath,
       specificOutputFileName: 'template',
-      paths
+      paths,
+      callBackObject
     })
   }
   
@@ -58,7 +61,8 @@ export const genDashboard = async(config: Config, paths: Paths) => {
       defaultFileUrl: '',
       templatePath: dashboardLoadingPath,
       specificOutputFileName: 'loading',
-      paths
+      paths,
+      callBackObject
     })
   }
 }

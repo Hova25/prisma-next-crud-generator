@@ -1,10 +1,8 @@
-import { genPersonalizedFile, Paths } from './genPersonalizedFile'
+import { CallBackObject, genPersonalizedFile, Paths } from './genPersonalizedFile'
 import path from 'path'
 import { Config } from '../utils/configReader'
-import { sidebar } from '../template/components/sidebar'
-import { DMMF } from '@prisma/generator-helper'
 
-export const genComponents = async(config: Config, paths: Paths, models: DMMF.Model[] = [],) => {
+export const genComponents = async(config: Config, paths: Paths, callBackObject: CallBackObject) => {
   const {
     components: {
       path: componentsPath = '',
@@ -43,9 +41,7 @@ export const genComponents = async(config: Config, paths: Paths, models: DMMF.Mo
       templatePath: sidebarTemplatePath,
       specificOutputFileName: "Sidebar",
       paths,
-      callBackObject: {
-        models
-      }
+      callBackObject
     })
   }
   const uiPath = {
@@ -58,7 +54,8 @@ export const genComponents = async(config: Config, paths: Paths, models: DMMF.Mo
       defaultFileUrl: path.resolve(__dirname, '../template/components/ui/breadcrumbs'),
       templatePath: breadcrumbsTemplatePath,
       specificOutputFileName: "Breadcrumbs",
-      paths: uiPath
+      paths: uiPath,
+      callBackObject
     })
   }
   
@@ -67,7 +64,8 @@ export const genComponents = async(config: Config, paths: Paths, models: DMMF.Mo
       defaultFileUrl: path.resolve(__dirname, '../template/components/ui/heading'),
       templatePath: headingTemplatePath,
       specificOutputFileName: "Heading",
-      paths: uiPath
+      paths: uiPath,
+      callBackObject
     })
   }
   
@@ -76,7 +74,8 @@ export const genComponents = async(config: Config, paths: Paths, models: DMMF.Mo
       defaultFileUrl: path.resolve(__dirname, '../template/components/ui/button'),
       templatePath: buttonTemplatePath,
       specificOutputFileName: "Button",
-      paths: uiPath
+      paths: uiPath,
+      callBackObject
     })
   }
   
@@ -85,7 +84,8 @@ export const genComponents = async(config: Config, paths: Paths, models: DMMF.Mo
       defaultFileUrl: path.resolve(__dirname, '../template/components/ui/input'),
       templatePath: inputTemplatePath,
       specificOutputFileName: "Input",
-      paths: uiPath
+      paths: uiPath,
+      callBackObject
     })
   }
   
@@ -94,7 +94,8 @@ export const genComponents = async(config: Config, paths: Paths, models: DMMF.Mo
       defaultFileUrl: path.resolve(__dirname, '../template/components/ui/select'),
       templatePath: selectTemplatePath,
       specificOutputFileName: "Select",
-      paths: uiPath
+      paths: uiPath,
+      callBackObject
     })
   }
 }

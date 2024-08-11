@@ -18,7 +18,7 @@ import { actions } from '../template/actions'
 import { pascalToCamelCase, pascalToSnakeCase, pluralize } from '../utils/strings'
 import { Config } from '../utils/configReader'
 import { isIgnored } from '../helpers/configHelper'
-import { genPersonalizedFile, Paths } from './genPersonalizedFile'
+import { CallBackObject, genPersonalizedFile } from './genPersonalizedFile'
 import { genDashboard } from './genDashboard'
 import { genComponents } from './genComponents'
 
@@ -47,6 +47,11 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
   const appPath =  path.join(outputRootDirectory, 'app', dashboardPath || "")
   const actionsPath = path.join(outputRootDirectory, 'actions')
   
+  const callBackObject: CallBackObject = {
+    models,
+    config
+  }
+  
   if(!prismaConfigDisable) {
     await genPersonalizedFile({
       defaultFileUrl: path.resolve(__dirname, '../template/lib'),
@@ -59,6 +64,7 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
         tscBinPath,
         appPath: path.join(outputRootDirectory, prismaConfigPath ||  'lib'),
       },
+      callBackObject
     })
   }
   
@@ -69,14 +75,14 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
     outputRootDirectory,
     tscBinPath,
     appPath: componentsPath
-  }, models);
+  }, callBackObject);
   
   await genDashboard(config, {
     generatorDirectory,
     outputRootDirectory,
     tscBinPath,
-    appPath
-  });
+    appPath,
+  }, callBackObject);
 
   for (const model of models) {
     const modelNameCamelCase = pascalToCamelCase(model.name)
