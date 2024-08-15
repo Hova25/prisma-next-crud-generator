@@ -9,28 +9,29 @@
     "start": "next start",
     "lint": "next lint",
     "prisma:gen": "prisma generate",
-    "prisma:push": "prisma db push"
+    "prisma:push": "prisma db push",
+    "clean": "sh ../../scripts/cleanUsage.sh"
   },
   "dependencies": {
     "@prisma/client": "^5.6.0",
-    "next": "14.0.3",
-    "react": "^18",
-    "react-dom": "^18",
+    "next": "14.2.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-select": "^5.8.0",
-    "tailwind-merge": "^2.1.0"
+    "tailwind-merge": "^2.5.2"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.7",
     "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.16",
     "eslint": "^8",
-    "eslint-config-next": "14.0.3",
-    "postcss": "^8.4.31",
+    "eslint-config-next": "14.2.5",
+    "postcss": "^8.4.41",
     "prisma": "^5.6.0",
     "prisma-next-crud-generator": "workspace:^",
-    "tailwindcss": "^3.3.6",
-    "typescript": "^5"
+    "tailwindcss": "^3.4.10",
+    "typescript": "^5.5.4"
   }
 }
