@@ -10,13 +10,25 @@ global:
 components:
   sidebar:
     templatePath: "template/sidebar.ts"
+  crud:
+    readList:
+      templatePath: "template/crud/readList.ts"
 
 #  ui:
 #    input:
 #      templatePath: "template/components/input.ts"
-#entity:
-#  user:
+entity:
+  hidden:
+    disable: true
+  user:
+    disable: false
 #    ignore:
+#      - readList
+#      - readOne
+#      - delete
+#      - create
+#      - update
+#    enable:
 #      - readList
 #      - readOne
 #      - delete

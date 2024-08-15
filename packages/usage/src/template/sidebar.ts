@@ -1,7 +1,7 @@
 import { CallBackObject, pascalToSnakeCase, pluralize } from 'prisma-next-crud-generator'
 
 exports.sidebar = ({ models = [], config }: CallBackObject) => {
-  const modelsNames = models.map(model => model.name);
+  const modelsNames = models.map(model => model.name).filter(model => model !== "Hidden");
   const specificAdminPath = config?.global?.dashboard?.path || ''
   
   const resourcesList = modelsNames.reduce((result, modelName) => {
