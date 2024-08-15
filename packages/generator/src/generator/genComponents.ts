@@ -2,7 +2,13 @@ import { CallBackObject, genPersonalizedFile, Paths } from './genPersonalizedFil
 import path from 'path'
 import { Config } from '../utils/configReader'
 
-export const genComponents = async(config: Config, paths: Paths, callBackObject: CallBackObject) => {
+type GenComponents = {
+  config?: Config,
+  paths: Paths,
+  callBackObject: CallBackObject
+}
+
+export const genComponents = async({ config, paths, callBackObject }: GenComponents) => {
   const {
     components: {
       path: componentsPath = '',

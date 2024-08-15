@@ -2,7 +2,13 @@ import { CallBackObject, genPersonalizedFile, Paths } from './genPersonalizedFil
 import path from 'path'
 import { Config } from '../utils/configReader'
 
-export const genDashboard = async(config: Config, paths: Paths, callBackObject: CallBackObject) => {
+type GenDashboard = {
+  config?: Config,
+  paths: Paths,
+  callBackObject: CallBackObject
+}
+
+export const genDashboard = async({ config, paths, callBackObject }: GenDashboard) => {
   const {
     global: {
       dashboard: {

@@ -62,17 +62,26 @@ const globalSchema = z.object({
 })
 
 const componentsUiSchema = z.object({
-  breadcrumbs: genericFileSchema.optional().optional(),
-  heading: genericFileSchema.optional().optional(),
-  button: genericFileSchema.optional().optional(),
-  input: genericFileSchema.optional().optional(),
-  select: genericFileSchema.optional().optional(),
+  breadcrumbs: genericFileSchema.optional(),
+  heading: genericFileSchema.optional(),
+  button: genericFileSchema.optional(),
+  input: genericFileSchema.optional(),
+  select: genericFileSchema.optional(),
+}).strict()
+
+const componentsCrudSchema = z.object({
+  readList: genericFileSchema.optional(),
+  readOne: genericFileSchema.optional(),
+  delete: genericFileSchema.optional(),
+  create: genericFileSchema.optional(),
+  update: genericFileSchema.optional(),
 }).strict()
 
 const componentsSchema = z.object({
   path: z.string().optional(),
   sidebar: genericFileSchema.optional(),
-  ui: componentsUiSchema.optional()
+  ui: componentsUiSchema.optional(),
+  crud: componentsCrudSchema.optional()
 }).strict()
 
 const configSchema = z.object({

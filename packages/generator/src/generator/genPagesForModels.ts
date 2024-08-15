@@ -70,19 +70,27 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
   
   const componentsPath = path.join(outputRootDirectory, componentsSpecificPath || 'components')
   
-  await genComponents(config, {
-    generatorDirectory,
-    outputRootDirectory,
-    tscBinPath,
-    appPath: componentsPath
-  }, callBackObject);
+  await genComponents({
+    config,
+    callBackObject,
+    paths: {
+      generatorDirectory,
+      outputRootDirectory,
+      tscBinPath,
+      appPath: componentsPath
+    }
+  });
   
-  await genDashboard(config, {
-    generatorDirectory,
-    outputRootDirectory,
-    tscBinPath,
-    appPath,
-  }, callBackObject);
+  await genDashboard({
+    config,
+    callBackObject,
+    paths:{
+      generatorDirectory,
+      outputRootDirectory,
+      tscBinPath,
+      appPath,
+    },
+  });
 
   for (const model of models) {
     const modelNameCamelCase = pascalToCamelCase(model.name)
