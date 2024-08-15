@@ -1,0 +1,4 @@
+model Hey {
+  id   String @id @default(cuid())
+  name String
+}

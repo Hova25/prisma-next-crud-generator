@@ -1,16 +1,17 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["prismaSchemaFolder"]
 }
 
 generator next_crud_generator {
   provider = "npx prisma-next-crud-generator"
-  output   = "../src"
+  output   = "../../src"
   config   = "./config/next_crud_generator"
 }
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url      = "file:../dev.db"
 }
 
 model User {
