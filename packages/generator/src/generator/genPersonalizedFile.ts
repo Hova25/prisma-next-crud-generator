@@ -13,12 +13,13 @@ export type Paths = {
 }
 
 export type CallBackObject = {
+  model?: DMMF.Model
   models?: DMMF.Model[]
   config?: Config
 }
 
 type GenPersonalizedFile = {
-  templatePath: string
+  templatePath?: string
   paths: Paths,
   defaultFileUrl?: string
   specificOutputFileName?: string
@@ -61,7 +62,6 @@ export const genPersonalizedFile = async({
     
     if(templatePath) {
       fileName = templatePath.split("/").at(-1)!
-      
       await writeFileSafely(
         path.join(generatorDirectory, fileName),
         undefined,
@@ -89,7 +89,7 @@ export const genPersonalizedFile = async({
       ),
       content
     );
-    
+    return true;
   } catch (e: unknown) {
     if (e instanceof Error) {
       logger.info(`Error to write ${specificOutputFileName} ${templatePath}`, e.message);

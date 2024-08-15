@@ -1,4 +1,3 @@
-import { DMMF } from '@prisma/generator-helper'
 import { mapFieldsToTableData } from '../helpers/mapFieldsToTableData'
 import { mapFieldsToTableTitles } from '../helpers/mapFieldsToTableTitles'
 import {
@@ -7,8 +6,11 @@ import {
   pascalToSnakeCase,
   pluralize,
 } from '../utils/strings'
+import { CallBackObject } from '../generator/genPersonalizedFile'
 
-export const list = ({ name: modelName, fields }: DMMF.Model) => {
+export const list = ({ model }: CallBackObject) => {
+  const {name: modelName, fields} = model
+  
   const modelNamePlural = pluralize(modelName)
   const modelNameSpaced = pascalCaseToSpaces(modelName)
   const modelNameSpacedPlural = pascalCaseToSpaces(modelNamePlural)

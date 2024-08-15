@@ -1,24 +1,16 @@
 import path from 'path'
 import { DMMF } from '@prisma/generator-helper'
-import { layout } from '../template/layout'
-// import { dashboard } from '../template/dashboard'
 import { list } from '../template/list'
 import { show } from '../template/show'
 import { create } from '../template/create'
 import { edit } from '../template/edit'
 import { lib } from '../template/lib'
 import { writeFileSafely } from '../utils/writeFileSafely'
-import { sidebar } from '../template/components/sidebar'
-import { input } from '../template/components/ui/input'
-import { heading } from '../template/components/ui/heading'
-import { button } from '../template/components/ui/button'
-import { breadcrumbs } from '../template/components/ui/breadcrumbs'
-import { select } from '../template/components/ui/select'
 import { actions } from '../template/actions'
 import { pascalToCamelCase, pascalToSnakeCase, pluralize } from '../utils/strings'
 import { Config } from '../utils/configReader'
 import { isIgnored } from '../helpers/configHelper'
-import { CallBackObject, genPersonalizedFile } from './genPersonalizedFile'
+import { CallBackObject, genPersonalizedFile, Paths } from './genPersonalizedFile'
 import { genDashboard } from './genDashboard'
 import { genComponents } from './genComponents'
 
@@ -35,8 +27,10 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
       } = {}
     } = {},
     components: {
-      path: componentsSpecificPath = ''
-    } = {}
+      path: componentsSpecificPath = '',
+      crud
+    } = {},
+    entity
   } = config || {};
   
   const rootDirectory = path.dirname(path.dirname(__dirname))
@@ -84,7 +78,7 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
   await genDashboard({
     config,
     callBackObject,
-    paths:{
+    paths: {
       generatorDirectory,
       outputRootDirectory,
       tscBinPath,
@@ -97,14 +91,36 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
     const modelNameSnakeCase = pascalToSnakeCase(model.name)
     const modelNameSnakeCasePlural = pluralize(modelNameSnakeCase)
     
+    if(entity?.[modelNameCamelCase]?.disable) {
+      console.log(`❗ ${model.name} generation has skipped`);
+      continue;
+    }
+    
     const promises: Promise<void>[] = [];
     
-    if(!config || !isIgnored({modelNameCamelCase, config, crudAction: "readList"})) {
-      const indexFile = list(model)
-      promises.push(writeFileSafely(
-        path.join(appPath, `${modelNameSnakeCasePlural}`, 'page.tsx'),
-        indexFile,
-      ))
+    const callBackObjectWithModel: CallBackObject = {...callBackObject, model}
+    
+    const appPaths: Paths = {
+      generatorDirectory,
+      outputRootDirectory,
+      tscBinPath,
+      appPath: path.join(appPath, modelNameSnakeCasePlural),
+    }
+    
+    const generatedFiles: string[] = []
+    
+    if(!isIgnored({modelNameCamelCase, config, crudAction: "readList"})) {
+      const readListTemplatePath = crud?.readList?.templatePath || undefined
+      const listGenerated = await genPersonalizedFile({
+        defaultFileUrl: path.resolve(__dirname, '../template/list'),
+        templatePath: readListTemplatePath,
+        specificOutputFileName: "page",
+        paths: appPaths,
+        callBackObject: callBackObjectWithModel
+      })
+      if(listGenerated) {
+        generatedFiles.push('readList')
+      }
     }
     
     if(!config || !isIgnored({modelNameCamelCase, config, crudAction: "readOne"})) {
@@ -136,13 +152,14 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
       ))
     }
     
-    if(!config || !isIgnored({modelNameCamelCase, config, crudAction: "delete"})) {
-      const actionsFile = actions(model.name, model.fields, models)
-      promises.push(writeFileSafely(
-        path.join(actionsPath, `${modelNameSnakeCase}.ts`),
-        actionsFile,
-      ))
-    }
+    const actionsFile = actions(model.name, model.fields, models)
+    promises.push(writeFileSafely(
+      path.join(actionsPath, `${modelNameSnakeCase}.ts`),
+      actionsFile,
+    ))
+    generatedFiles.push('actions');
+    
+    console.log(`✅ Entity ${model.name} files (${generatedFiles.toString()}]) as been created`)
     
     await Promise.all(promises)
   }

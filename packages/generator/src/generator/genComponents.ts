@@ -11,7 +11,6 @@ type GenComponents = {
 export const genComponents = async({ config, paths, callBackObject }: GenComponents) => {
   const {
     components: {
-      path: componentsPath = '',
       sidebar: {
         disable: sidebarDisable = false,
         templatePath: sidebarTemplatePath = ''

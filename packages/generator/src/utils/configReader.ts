@@ -28,18 +28,30 @@ type IgnoreCrudType = z.infer<typeof ignoreCrudSchema>;
 export type CrudAction = NonNullable<IgnoreCrudType>[number];
 
 
-const genericFileSchema = z.object({
-  disable: z.boolean().optional(),
+const fileSchema = z.object({
   templatePath: z.string().optional(),
 }).optional()
 
-const entitySchema = z.intersection(
-  genericFileSchema,
+const genericFileSchema = z.intersection(
   z.object({
-    path: z.string().optional(), // example "/" or "/admin"
-    ignore: ignoreCrudSchema.optional(),
-  })
-)
+    disable: z.boolean().optional(),
+  }),
+  fileSchema
+).optional()
+
+
+const entitySchema = z.object({
+  disable: z.boolean().optional(),
+  // path: z.string().optional(), // example "/" or "/admin"
+  ignore: ignoreCrudSchema.optional(),
+}).strict()
+// const entitySchema = z.intersection(
+//   genericFileSchema,
+//   z.object({
+//     path: z.string().optional(), // example "/" or "/admin"
+//     ignore: ignoreCrudSchema.optional(),
+//   })
+// )
 
 const nextAppDirectoryFileSchema = z.object({
   path: z.string().optional(), // example "/" or "/admin"
@@ -70,11 +82,11 @@ const componentsUiSchema = z.object({
 }).strict()
 
 const componentsCrudSchema = z.object({
-  readList: genericFileSchema.optional(),
-  readOne: genericFileSchema.optional(),
-  delete: genericFileSchema.optional(),
-  create: genericFileSchema.optional(),
-  update: genericFileSchema.optional(),
+  readList: fileSchema.optional(),
+  readOne: fileSchema.optional(),
+  delete: fileSchema.optional(),
+  create: fileSchema.optional(),
+  update: fileSchema.optional(),
 }).strict()
 
 const componentsSchema = z.object({
@@ -105,7 +117,7 @@ export const getConfig = (options: GeneratorOptions): Config | undefined =>  {
     if (error instanceof ZodError) {
       logger.info(`Error to parse config file `, error.message)
     } else {
-      console.error('Unexpected error in parse config file:');
+      logger.error(`Unexpected error in parse config file.`)
     }
     throw "Stop Process"
   }
