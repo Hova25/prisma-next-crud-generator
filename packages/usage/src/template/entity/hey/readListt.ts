@@ -6,7 +6,7 @@ import {
   pluralize,
 } from 'prisma-next-crud-generator'
 
-exports.readList = ({ model, config }: CallBackObject) => {
+exports.readListt = ({ model, config }: CallBackObject) => {
   if(!model) {
     return;
   }
@@ -39,7 +39,7 @@ exports.readList = ({ model, config }: CallBackObject) => {
     return (
       <>
         <Breadcrumbs elements={breadcrumbs} className="my-2" />
-        heyyyyygshsjsh
+        HEY ENTITYYYYYY
         <header className="flex justify-between mb-4">
           <Heading>All ${modelNameSpacedPlural}</Heading>
           <Button

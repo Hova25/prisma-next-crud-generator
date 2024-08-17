@@ -12,7 +12,8 @@ components:
     templatePath: "template/sidebar.ts"
   crud:
     readList:
-      templatePath: "template/crud/readList.ts"
+      page:
+        templatePath: "template/crud/readList.ts"
 
 #  ui:
 #    input:
@@ -22,6 +23,11 @@ entity:
     disable: true
   user:
     disable: false
+  hey:
+    components:
+      readList:
+        page:
+          templatePath: "template/entity/hey/readListt.ts"
 #    ignore:
 #      - readList
 #      - readOne

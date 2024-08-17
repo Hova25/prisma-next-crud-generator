@@ -39,20 +39,6 @@ const genericFileSchema = z.intersection(
   fileSchema
 ).optional()
 
-
-const entitySchema = z.object({
-  disable: z.boolean().optional(),
-  // path: z.string().optional(), // example "/" or "/admin"
-  ignore: ignoreCrudSchema.optional(),
-}).strict()
-// const entitySchema = z.intersection(
-//   genericFileSchema,
-//   z.object({
-//     path: z.string().optional(), // example "/" or "/admin"
-//     ignore: ignoreCrudSchema.optional(),
-//   })
-// )
-
 const nextAppDirectoryFileSchema = z.object({
   path: z.string().optional(), // example "/" or "/admin"
   page: genericFileSchema.optional(),
@@ -64,6 +50,23 @@ const nextAppDirectoryFileSchema = z.object({
   // globalError: genericFileSchema.optional(),
   // route: genericFileSchema.optional(), not root for the moment (because we need to create and spécific feature for this)
   // default: genericFileSchema.optional(), not root for the moment (because we need to create and spécific feature for this)
+}).strict()
+
+export type NextAppDirectoryFileSchema = z.infer<typeof nextAppDirectoryFileSchema>;
+
+const componentsCrudSchema = z.object({
+  readList: nextAppDirectoryFileSchema.optional(),
+  readOne: nextAppDirectoryFileSchema.optional(),
+  delete: nextAppDirectoryFileSchema.optional(),
+  create: nextAppDirectoryFileSchema.optional(),
+  update: nextAppDirectoryFileSchema.optional(),
+}).strict()
+
+const entitySchema = z.object({
+  disable: z.boolean().optional(),
+  // path: z.string().optional(), // example "/" or "/admin"
+  ignore: ignoreCrudSchema.optional(),
+  components: componentsCrudSchema.optional()
 }).strict()
 
 const globalSchema = z.object({
@@ -81,13 +84,6 @@ const componentsUiSchema = z.object({
   select: genericFileSchema.optional(),
 }).strict()
 
-const componentsCrudSchema = z.object({
-  readList: fileSchema.optional(),
-  readOne: fileSchema.optional(),
-  delete: fileSchema.optional(),
-  create: fileSchema.optional(),
-  update: fileSchema.optional(),
-}).strict()
 
 const componentsSchema = z.object({
   path: z.string().optional(),
@@ -99,7 +95,7 @@ const componentsSchema = z.object({
 const configSchema = z.object({
   global: globalSchema.optional(),
   components: componentsSchema.optional(),
-  entity: z.record(z.string(), entitySchema).optional(),
+  entity: z.record(z.string(), entitySchema),
 }).optional();
 
 export type Config = z.infer<typeof configSchema>;
