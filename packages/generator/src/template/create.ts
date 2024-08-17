@@ -7,8 +7,14 @@ import {
   pluralize,
   singularize,
 } from '../utils/strings'
+import { CallBackObject } from '../generator/genPersonalizedFile'
 
-export const create = (modelName: string, fields: DMMF.Field[]) => {
+export const create = ({ model }: CallBackObject) => {
+  if(!model) {
+    return;
+  }
+  const {name: modelName, fields} = model
+  
   const fieldsInput = mapFieldsToFormInputs(fields)
 
   const relations = fields

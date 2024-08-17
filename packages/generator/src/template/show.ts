@@ -7,8 +7,14 @@ import {
   pluralize,
 } from '../utils/strings'
 import { renderModelNotFound } from '../utils/renderModelNotFound'
+import { CallBackObject } from '../generator/genPersonalizedFile'
 
-export const show = (modelName: string, fields: DMMF.Field[]) => {
+export const show = ({ model }: CallBackObject) => {
+  if(!model) {
+    return;
+  }
+  const {name: modelName, fields} = model
+  
   const modelNameSpaced = pascalCaseToSpaces(modelName)
   const modelNameSpacedPlural = pluralize(modelNameSpaced)
   const modelNameCamelCase = pascalToCamelCase(modelName)

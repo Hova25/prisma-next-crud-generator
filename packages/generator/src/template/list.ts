@@ -9,6 +9,9 @@ import {
 import { CallBackObject } from '../generator/genPersonalizedFile'
 
 export const list = ({ model }: CallBackObject) => {
+  if(!model) {
+    return;
+  }
   const {name: modelName, fields} = model
   
   const modelNamePlural = pluralize(modelName)

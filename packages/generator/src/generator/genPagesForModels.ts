@@ -86,6 +86,15 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
       appPath,
     },
   });
+  
+  const getPaths = (appPath: Paths["appPath"]) => {
+    return {
+      generatorDirectory,
+      outputRootDirectory,
+      tscBinPath,
+      appPath,
+    }
+  }
 
   for (const model of models) {
     const modelNameCamelCase = pascalToCamelCase(model.name)
@@ -101,13 +110,6 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
     
     const callBackObjectWithModel: CallBackObject = {...callBackObject, model}
     
-    const appPaths: Paths = {
-      generatorDirectory,
-      outputRootDirectory,
-      tscBinPath,
-      appPath: path.join(appPath, modelNameSnakeCasePlural),
-    }
-    
     const generatedFiles: string[] = []
     
     if(!isIgnored({modelNameCamelCase, config, crudAction: "readList"})) {
@@ -116,7 +118,7 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
         genericTemplatePage: crud?.readList?.page?.templatePath,
         appDirectoryFileConfig: entity?.[modelNameCamelCase]?.components?.readList,
         callBackObject: callBackObjectWithModel,
-        paths: appPaths
+        paths: getPaths(path.join(appPath, entity?.[modelNameCamelCase]?.components?.readList?.path || modelNameSnakeCasePlural))
       })
       
       if(listFiles.length > 0) {
@@ -124,33 +126,58 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
       }
     }
     
-    if(!config || !isIgnored({modelNameCamelCase, config, crudAction: "readOne"})) {
-      const showFile = show(model.name, model.fields as DMMF.Field[])
-      promises.push(writeFileSafely(
-        path.join(appPath, `${modelNameSnakeCasePlural}`, '[id]', 'page.tsx'),
-        showFile,
-      ))
+    if(!isIgnored({modelNameCamelCase, config, crudAction: "readOne"})) {
+      const listFiles = await genNextAppDirectoryFiles({
+        defaultTemplatePage: 'template/show',
+        genericTemplatePage: crud?.readOne?.page?.templatePath,
+        appDirectoryFileConfig: entity?.[modelNameCamelCase]?.components?.readOne,
+        callBackObject: callBackObjectWithModel,
+        paths: getPaths(path.join(
+          appPath,
+          entity?.[modelNameCamelCase]?.components?.readOne?.path ||
+          `${modelNameSnakeCasePlural}/[id]`
+        ))
+      })
+      
+      if(listFiles.length > 0) {
+        generatedFiles.push(`readOne[${listFiles.toString()}]`)
+      }
     }
     
-    if(!config || !isIgnored({modelNameCamelCase, config, crudAction: "create"})) {
-      const createFile = create(model.name, model.fields as DMMF.Field[])
-      promises.push(writeFileSafely(
-        path.join(appPath, `${modelNameSnakeCasePlural}`, 'create', 'page.tsx'),
-        createFile,
-      ))
-    }
-    if(!config || !isIgnored({modelNameCamelCase, config, crudAction: "update"})) {
-      const editFile = edit(model.name, model.fields as DMMF.Field[])
-      promises.push(writeFileSafely(
-        path.join(
+    if(!isIgnored({modelNameCamelCase, config, crudAction: "create"})) {
+      const listFiles = await genNextAppDirectoryFiles({
+        defaultTemplatePage: 'template/create',
+        genericTemplatePage: crud?.create?.page?.templatePath,
+        appDirectoryFileConfig: entity?.[modelNameCamelCase]?.components?.create,
+        callBackObject: callBackObjectWithModel,
+        paths: getPaths(path.join(
           appPath,
-          `${modelNameSnakeCasePlural}`,
-          '[id]',
-          'edit',
-          'page.tsx',
-        ),
-        editFile,
-      ))
+          entity?.[modelNameCamelCase]?.components?.create?.path ||
+          `${modelNameSnakeCasePlural}/create`
+        ))
+      })
+      
+      if(listFiles.length > 0) {
+        generatedFiles.push(`create[${listFiles.toString()}]`)
+      }
+    }
+    
+    if(!isIgnored({modelNameCamelCase, config, crudAction: "update"})) {
+      const listFiles = await genNextAppDirectoryFiles({
+        defaultTemplatePage: 'template/edit',
+        genericTemplatePage: crud?.update?.page?.templatePath,
+        appDirectoryFileConfig: entity?.[modelNameCamelCase]?.components?.update,
+        callBackObject: callBackObjectWithModel,
+        paths: getPaths(path.join(
+          appPath,
+          entity?.[modelNameCamelCase]?.components?.update?.path ||
+          `${modelNameSnakeCasePlural}/[id]/edit`
+        ))
+      })
+      
+      if(listFiles.length > 0) {
+        generatedFiles.push(`update[${listFiles.toString()}]`)
+      }
     }
     
     const actionsFile = actions(model.name, model.fields as DMMF.Field[], models)

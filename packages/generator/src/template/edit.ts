@@ -8,8 +8,14 @@ import {
   pluralize,
   singularize,
 } from '../utils/strings'
+import { CallBackObject } from '../generator/genPersonalizedFile'
 
-export const edit = (modelName: string, fields: DMMF.Field[]) => {
+export const edit = ({ model }: CallBackObject) => {
+  if(!model) {
+    return;
+  }
+  const {name: modelName, fields} = model
+  
   const modelNameCamelCase = pascalToCamelCase(modelName)
   const fieldsInput = mapFieldsToFormInputs(fields, modelNameCamelCase, true)
   const idField = fields.find((field) => field.isId)
