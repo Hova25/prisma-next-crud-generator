@@ -1,12 +1,12 @@
-import { mapFieldsToFormData } from '../helpers/mapFieldsToFormData'
 import {
+  CallBackObject,
+  mapFieldsToFormData,
   pascalToCamelCase,
   pascalToSnakeCase,
   pluralize,
-} from '../utils/strings'
-import { CallBackObject } from '../generator/genPersonalizedFile'
+} from 'prisma-next-crud-generator'
 
-export const actions = ({ model, models }: CallBackObject) => {
+exports.actions = ({ model, models }: CallBackObject) => {
   if(!model) {
     return;
   }
@@ -31,6 +31,7 @@ export const actions = ({ model, models }: CallBackObject) => {
       ${formDataCreateFields}
     }
     
+    // test custom entity action
     const ${modelNameCamelCase} = await prisma.${modelNameCamelCase}.create({ data });
 
     if (${modelNameCamelCase}) {

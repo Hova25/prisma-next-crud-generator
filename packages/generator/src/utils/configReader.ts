@@ -21,23 +21,17 @@ const ignoreCrudSchema = z.array(z.union([
   z.literal('readList').optional(),
   z.literal('readOne').optional(),
   z.literal('update').optional(),
-  z.literal('delete').optional()
+  z.literal('delete').optional(),
+  z.literal('actions').optional()
 ]));
 
 type IgnoreCrudType = z.infer<typeof ignoreCrudSchema>;
 export type CrudAction = NonNullable<IgnoreCrudType>[number];
 
-
-const fileSchema = z.object({
+const genericFileSchema = z.object({
+  disable: z.boolean().optional(),
   templatePath: z.string().optional(),
-}).optional()
-
-const genericFileSchema = z.intersection(
-  z.object({
-    disable: z.boolean().optional(),
-  }),
-  fileSchema
-).optional()
+})
 
 const nextAppDirectoryFileSchema = z.object({
   path: z.string().optional(), // example "/" or "/admin"
@@ -60,6 +54,10 @@ const componentsCrudSchema = z.object({
   delete: nextAppDirectoryFileSchema.optional(),
   create: nextAppDirectoryFileSchema.optional(),
   update: nextAppDirectoryFileSchema.optional(),
+  actions: z.object({
+    path: z.string().optional(),
+    templatePath: z.string().optional()
+  }).optional(),
 }).strict()
 
 const entitySchema = z.object({

@@ -1,12 +1,5 @@
 import path from 'path'
 import { DMMF } from '@prisma/generator-helper'
-import { list } from '../template/list'
-import { show } from '../template/show'
-import { create } from '../template/create'
-import { edit } from '../template/edit'
-import { lib } from '../template/lib'
-import { writeFileSafely } from '../utils/writeFileSafely'
-import { actions } from '../template/actions'
 import { pascalToCamelCase, pascalToSnakeCase, pluralize } from '../utils/strings'
 import { Config } from '../utils/configReader'
 import { isIgnored } from '../helpers/configHelper'
@@ -40,7 +33,6 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
   const tscBinPath = path.resolve(path.dirname(outputRootDirectory), 'node_modules', '.bin', 'tsc')
   
   const appPath =  path.join(outputRootDirectory, 'app', dashboardPath || "")
-  const actionsPath = path.join(outputRootDirectory, 'actions')
   
   const callBackObject: CallBackObject = {
     models,
@@ -106,14 +98,32 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
       continue;
     }
     
-    const promises: Promise<void>[] = [];
-    
     const callBackObjectWithModel: CallBackObject = {...callBackObject, model}
     
     const generatedFiles: string[] = []
     
+    if(!isIgnored({modelNameCamelCase, config, crudAction: "actions"})) {
+      const actions = await genPersonalizedFile({
+        defaultFileUrl: path.resolve(__dirname, '../template/actions'),
+        templatePath:  entity?.[modelNameCamelCase]?.components?.actions?.templatePath || crud?.actions?.templatePath,
+        specificOutputFileName: modelNameSnakeCase,
+        outputFormat: 'ts',
+        paths: {
+          generatorDirectory,
+          outputRootDirectory,
+          tscBinPath,
+          appPath: path.join(outputRootDirectory, entity?.[modelNameCamelCase]?.components?.actions?.path || crud?.actions?.path ||  'actions'),
+        },
+        callBackObject: callBackObjectWithModel
+      })
+      
+      if(actions) {
+        generatedFiles.push('actions')
+      }
+    }
+    
     if(!isIgnored({modelNameCamelCase, config, crudAction: "readList"})) {
-      const listFiles = await genNextAppDirectoryFiles({
+      const readListFiles = await genNextAppDirectoryFiles({
         defaultTemplatePage: 'template/list',
         genericTemplatePage: crud?.readList?.page?.templatePath,
         appDirectoryFileConfig: entity?.[modelNameCamelCase]?.components?.readList,
@@ -121,13 +131,13 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
         paths: getPaths(path.join(appPath, entity?.[modelNameCamelCase]?.components?.readList?.path || modelNameSnakeCasePlural))
       })
       
-      if(listFiles.length > 0) {
-        generatedFiles.push(`readList[${listFiles.toString()}]`)
+      if(readListFiles.length > 0) {
+        generatedFiles.push(`readList[${readListFiles.toString()}]`)
       }
     }
     
     if(!isIgnored({modelNameCamelCase, config, crudAction: "readOne"})) {
-      const listFiles = await genNextAppDirectoryFiles({
+      const readOneFiles = await genNextAppDirectoryFiles({
         defaultTemplatePage: 'template/show',
         genericTemplatePage: crud?.readOne?.page?.templatePath,
         appDirectoryFileConfig: entity?.[modelNameCamelCase]?.components?.readOne,
@@ -139,13 +149,13 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
         ))
       })
       
-      if(listFiles.length > 0) {
-        generatedFiles.push(`readOne[${listFiles.toString()}]`)
+      if(readOneFiles.length > 0) {
+        generatedFiles.push(`readOne[${readOneFiles.toString()}]`)
       }
     }
     
     if(!isIgnored({modelNameCamelCase, config, crudAction: "create"})) {
-      const listFiles = await genNextAppDirectoryFiles({
+      const createFiles = await genNextAppDirectoryFiles({
         defaultTemplatePage: 'template/create',
         genericTemplatePage: crud?.create?.page?.templatePath,
         appDirectoryFileConfig: entity?.[modelNameCamelCase]?.components?.create,
@@ -157,13 +167,13 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
         ))
       })
       
-      if(listFiles.length > 0) {
-        generatedFiles.push(`create[${listFiles.toString()}]`)
+      if(createFiles.length > 0) {
+        generatedFiles.push(`create[${createFiles.toString()}]`)
       }
     }
     
     if(!isIgnored({modelNameCamelCase, config, crudAction: "update"})) {
-      const listFiles = await genNextAppDirectoryFiles({
+      const updateFiles = await genNextAppDirectoryFiles({
         defaultTemplatePage: 'template/edit',
         genericTemplatePage: crud?.update?.page?.templatePath,
         appDirectoryFileConfig: entity?.[modelNameCamelCase]?.components?.update,
@@ -175,20 +185,11 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
         ))
       })
       
-      if(listFiles.length > 0) {
-        generatedFiles.push(`update[${listFiles.toString()}]`)
+      if(updateFiles.length > 0) {
+        generatedFiles.push(`update[${updateFiles.toString()}]`)
       }
     }
     
-    const actionsFile = actions(model.name, model.fields as DMMF.Field[], models)
-    promises.push(writeFileSafely(
-      path.join(actionsPath, `${modelNameSnakeCase}.ts`),
-      actionsFile,
-    ))
-    generatedFiles.push('actions');
-    
     console.log(`✅ Entity ${model.name} files (${generatedFiles.toString()}) as been created`)
-    
-    await Promise.all(promises)
   }
 }

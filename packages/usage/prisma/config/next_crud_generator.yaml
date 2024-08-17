@@ -10,10 +10,13 @@ global:
 components:
   sidebar:
     templatePath: "template/sidebar.ts"
-#  crud:
-#    readList:
-#      page:
-#        templatePath: "template/crud/readList.ts"
+  crud:
+    actions:
+      path: "actions/gen"
+      templatePath: "template/crud/actions.ts"
+    readList:
+      page:
+        templatePath: "template/crud/readList.ts"
 
 #  ui:
 #    input:
@@ -23,11 +26,14 @@ entity:
     disable: true
   user:
     disable: false
-#  hey:
-#    components:
-#      readList:
-#        page:
-#          templatePath: "template/entity/hey/readList.ts"
+  hey:
+    components:
+      actions:
+        path: "app/admin/heys"
+        templatePath: "template/entity/hey/actions.ts"
+      readList:
+        page:
+          templatePath: "template/entity/hey/readList.ts"
 #    ignore:
 #      - readList
 #      - readOne
