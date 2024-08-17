@@ -1,5 +1,5 @@
 import {
-  CallBackObject, mapFieldsToTableData, mapFieldsToTableTitles,
+  CallBackObject, getActionPath, mapFieldsToTableData, mapFieldsToTableTitles,
   pascalCaseToSpaces,
   pascalToCamelCase,
   pascalToSnakeCase,
@@ -20,10 +20,11 @@ exports.readList = ({ model, config }: CallBackObject) => {
   const modelNameSnakeCasePlural = pluralize(modelNameSnakeCase)
   const tableTitles = mapFieldsToTableTitles(fields)
   const tableData = mapFieldsToTableData(modelNameCamelCase, fields)
+  const actionPath = getActionPath(modelNameCamelCase, config);
 
   return `
   import { prisma } from '@/lib/prisma';
-  import { delete${modelName} } from '@/actions/${modelNameSnakeCase}';
+  import { delete${modelName} } from '@/${actionPath}/${modelNameSnakeCase}';
   import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
   import { Heading } from '@/components/ui/Heading';
   import { Button } from '@/components/ui/Button';

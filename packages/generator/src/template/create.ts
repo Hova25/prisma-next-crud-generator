@@ -7,27 +7,31 @@ import {
   singularize,
 } from '../utils/strings'
 import { CallBackObject } from '../generator/genPersonalizedFile'
+import { getActionPath } from '../utils/configReader'
 
-export const create = ({ model }: CallBackObject) => {
+export const create = ({ model, config }: CallBackObject) => {
   if(!model) {
     return;
   }
-  const {name: modelName, fields} = model
+  const {name: modelName, fields} = model;
   
-  const fieldsInput = mapFieldsToFormInputs(fields)
+  const fieldsInput = mapFieldsToFormInputs(fields);
 
   const relations = fields
     .filter((field) => field.kind === 'object')
     .map((field) => ({ name: field.name, type: field.type }))
 
-  const relationsQueries = generateRelationsQueries(relations)
-  const hasRelations = relations.length > 0
-
+  const relationsQueries = generateRelationsQueries(relations);
+  const hasRelations = relations.length > 0;
+  
+  const actionPath = getActionPath(pascalToCamelCase(modelName), config);
+  
   return createPageTemplate(
     modelName,
     fieldsInput,
     relationsQueries,
     hasRelations,
+    actionPath
   )
 }
 
@@ -49,6 +53,7 @@ function createPageTemplate(
   fieldsInput: string,
   relationsQueries: string,
   hasRelations: boolean,
+  actionPath: string
 ) {
   const modelNameSpacedPlural = pluralize(pascalCaseToSpaces(modelName))
   const modelNameSnakeCase = pascalToSnakeCase(modelName)
@@ -56,8 +61,7 @@ function createPageTemplate(
 
   return `
   import Link from 'next/link';
-  import { prisma } from '@/lib/prisma';
-  import { create${modelName} } from '@/actions/${modelNameSnakeCase}';
+  import { create${modelName} } from '@/${actionPath}/${modelNameSnakeCase}';
   import { Input } from '@/components/ui/Input';
   import { Heading } from '@/components/ui/Heading';
   import { Button } from '@/components/ui/Button';

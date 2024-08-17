@@ -1,19 +1,23 @@
 import { CallBackObject } from '../../generator/genPersonalizedFile'
 import { pascalToSnakeCase, pluralize } from '../../utils/strings'
 
-export const sidebar = ({ models = [] }: CallBackObject) => {
-  const modelsNames = models.map(model => model.name);
+export const sidebar = ({ models = [], config }: CallBackObject) => {
+  const modelsNames = models.map(model => model.name).filter(model => model !== "Hidden");
+  const specificAdminPath = config?.global?.dashboard?.path || '';
   const resourcesList = modelsNames.reduce((result, modelName) => {
     const modelNamePlural = pluralize(modelName)
     const modelNameSnakeCase = pascalToSnakeCase(modelName)
     const modelNameSnakeCasePlural = pluralize(modelNameSnakeCase)
-
+    const linkTo = specificAdminPath ?
+      `/${specificAdminPath}/${modelNameSnakeCasePlural}` :
+      `/${modelNameSnakeCasePlural}`;
+    
     return (
       result +
       `
       <li>
         <Link
-          href="/${modelNameSnakeCasePlural}"
+          href="${linkTo}"
           className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-indigo-100 hover:text-gray-700"
         >
           ${modelNamePlural}

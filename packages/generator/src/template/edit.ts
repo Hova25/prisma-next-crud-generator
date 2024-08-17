@@ -8,8 +8,9 @@ import {
   singularize,
 } from '../utils/strings'
 import { CallBackObject } from '../generator/genPersonalizedFile'
+import { getActionPath } from '../utils/configReader'
 
-export const edit = ({ model }: CallBackObject) => {
+export const edit = ({ model, config }: CallBackObject) => {
   if(!model) {
     return;
   }
@@ -28,7 +29,9 @@ export const edit = ({ model }: CallBackObject) => {
   const relationsNames = relations.map((relation) => relation.name)
 
   const relationsQueries = generateRelationsQueries(relations)
-
+  
+  const actionPath = getActionPath(pascalToCamelCase(modelName), config);
+  
   return editPageTemplate(
     modelName,
     fieldsInput,
@@ -36,6 +39,7 @@ export const edit = ({ model }: CallBackObject) => {
     hasRelations,
     relationsNames,
     relationsQueries,
+    actionPath
   )
 }
 
@@ -60,6 +64,7 @@ function editPageTemplate(
   hasRelations: boolean,
   relationsNames: string[],
   relationsQueries: string,
+  actionPath: string
 ) {
   const modelNameSpacedPlural = pluralize(pascalCaseToSpaces(modelName))
   const modelNameCamelCase = pascalToCamelCase(modelName)
@@ -69,7 +74,7 @@ function editPageTemplate(
   return `
   import Link from 'next/link';
   import { prisma } from '@/lib/prisma';
-  import { edit${modelName} } from '@/actions/${modelNameSnakeCase}';
+  import { edit${modelName} } from '@/${actionPath}/${modelNameSnakeCase}';
   import { Input } from '@/components/ui/Input';
   import { Heading } from '@/components/ui/Heading';
   import { Button } from '@/components/ui/Button';

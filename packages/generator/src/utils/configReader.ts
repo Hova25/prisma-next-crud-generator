@@ -5,6 +5,7 @@ import path from 'path'
 import process from 'process'
 import { GeneratorOptions } from '@prisma/generator-helper'
 import { logger } from '@prisma/internals'
+import { pascalToCamelCase } from './strings'
 
 export function readYaml<T> (src: string): T | undefined{
   try {
@@ -115,4 +116,12 @@ export const getConfig = (options: GeneratorOptions): Config | undefined =>  {
     }
     throw "Stop Process"
   }
+}
+
+export const getActionPath = (modelNameCamelCase: string = '', config?: Config) => {
+  const { components, entity } = config || {};
+  const globalCrudActionPath = components?.crud?.actions?.path
+  const entityCrudActionPath = entity?.[modelNameCamelCase]?.components?.actions?.path
+  return entityCrudActionPath || globalCrudActionPath || 'actions';
+  
 }

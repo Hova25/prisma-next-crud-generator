@@ -7,8 +7,9 @@ import {
   pluralize,
 } from '../utils/strings'
 import { CallBackObject } from '../generator/genPersonalizedFile'
+import { getActionPath } from '../utils/configReader'
 
-export const list = ({ model }: CallBackObject) => {
+export const list = ({ model, config }: CallBackObject) => {
   if(!model) {
     return;
   }
@@ -23,10 +24,12 @@ export const list = ({ model }: CallBackObject) => {
   const modelNameSnakeCasePlural = pluralize(modelNameSnakeCase)
   const tableTitles = mapFieldsToTableTitles(fields)
   const tableData = mapFieldsToTableData(modelNameCamelCase, fields)
-
+  
+  const actionPath = getActionPath(modelNameCamelCase, config);
+  
   return `
   import { prisma } from '@/lib/prisma';
-  import { delete${modelName} } from '@/actions/${modelNameSnakeCase}';
+  import { delete${modelName} } from '@/${actionPath}/${modelNameSnakeCase}';
   import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
   import { Heading } from '@/components/ui/Heading';
   import { Button } from '@/components/ui/Button';

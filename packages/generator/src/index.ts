@@ -8,3 +8,5 @@ export * from './helpers/mapFieldsToTableTitles'
 export {
   CallBackObject
 } from './generator/genPersonalizedFile'
+
+export {getActionPath} from './utils/configReader'
