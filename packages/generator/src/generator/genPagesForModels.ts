@@ -7,6 +7,7 @@ import { CallBackObject, genPersonalizedFile, Paths } from './genPersonalizedFil
 import { genDashboard } from './genDashboard'
 import { genComponents } from './genComponents'
 import { genNextAppDirectoryFiles } from './genNextAppDirectoryFiles'
+import fs from 'fs'
 
 export async function genPagesForModels(models: DMMF.Model[], outputRootDirectory: string, config?: Config) {
   const {
@@ -29,7 +30,7 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
   
   const rootDirectory = path.dirname(path.dirname(__dirname))
   // todo: change generator directory in node modules
-  const generatorDirectory = path.join(rootDirectory, ".generator")
+  const generatorDirectory = path.join(rootDirectory, ".generator");
   const tscBinPath = path.resolve(path.dirname(outputRootDirectory), 'node_modules', '.bin', 'tsc')
   
   const appPath =  path.join(outputRootDirectory, 'app', dashboardPath || "")
@@ -189,6 +190,8 @@ export async function genPagesForModels(models: DMMF.Model[], outputRootDirector
         generatedFiles.push(`update[${updateFiles.toString()}]`)
       }
     }
+    
+    fs.rmSync(generatorDirectory, { recursive: true, force: true });
     
     console.log(`✅ Entity ${model.name} files (${generatedFiles.toString()}) as been created`)
   }
