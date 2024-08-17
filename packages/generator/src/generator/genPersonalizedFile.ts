@@ -62,15 +62,21 @@ export const genPersonalizedFile = async({
     
     if(templatePath) {
       fileName = templatePath.split("/").at(-1)!
+      const generatorDirectoryChild = path.join(generatorDirectory, templatePath.replace(`/${fileName}`, ''))
+      const countDepth = (generatorDirectoryChild.replace(generatorDirectory, '').match(/\//g) || []).length + 1;
+      
       await writeFileSafely(
-        path.join(generatorDirectory, fileName),
+        path.join(generatorDirectoryChild, fileName),
         undefined,
         undefined,
-        path.join(outputRootDirectory, templatePath)
+        path.join(outputRootDirectory, templatePath),
+        {
+          "from 'prisma-next-crud-generator'": `from '${"../".repeat(countDepth)}src'`
+        }
       )
       
-      await compileFile(generatorDirectory, fileName, tscBinPath)
-      fileUrl = path.resolve(generatorDirectory, fileName.replace(".ts", ".js"))
+      await compileFile(generatorDirectoryChild, fileName, tscBinPath)
+      fileUrl = path.resolve(generatorDirectoryChild, fileName.replace(".ts", ".js"))
     }
     
     const importedTemplate = await import(fileUrl);

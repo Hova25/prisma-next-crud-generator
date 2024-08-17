@@ -27,7 +27,7 @@ entity:
     components:
       readList:
         page:
-          templatePath: "template/entity/hey/readListt.ts"
+          templatePath: "template/entity/hey/readList.ts"
 #    ignore:
 #      - readList
 #      - readOne

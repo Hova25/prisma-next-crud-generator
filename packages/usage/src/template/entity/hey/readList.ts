@@ -6,7 +6,7 @@ import {
   pluralize,
 } from 'prisma-next-crud-generator'
 
-exports.readListt = ({ model, config }: CallBackObject) => {
+exports.readList = ({ model, config }: CallBackObject) => {
   if(!model) {
     return;
   }
