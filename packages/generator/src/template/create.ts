@@ -1,4 +1,3 @@
-import { DMMF } from '@prisma/generator-helper'
 import { mapFieldsToFormInputs } from '../helpers/mapFieldsToFormInputs'
 import {
   pascalCaseToSpaces,
